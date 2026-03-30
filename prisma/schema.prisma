@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ScheduleType {
+  DAILY
+  WEEKLY
+  CUSTOM
+}
+
+enum HabitStatus {
+  ACTIVE
+  ARCHIVE
+}
+
+model User {
+  id                String   @id @default(uuid())
+  username          String   @unique
+  email             String   @unique
+  hashPassword      String
+  productivityScore Int      @default(0)
+  habits            Habit[]
+  createdAt         DateTime @default(now())
+}
+
+model Habit {
+  id                String            @id @default(uuid())
+  name              String
+  description       String?
+  scheduleType      ScheduleType
+  habitStatus       HabitStatus       @default(ACTIVE)
+  isPlatformCreated Boolean           @default(false)
+  isPublic          Boolean           @default(true)
+  currentStreak     Int               @default(0)
+  targetPerPeriod   Int               @default(1)
+  userId            String
+  user              User              @relation(fields: [userId], references: [id])
+  createdAt         DateTime          @default(now())
+  endDate           DateTime?
+  habitCompletions  HabitCompletion[]
+}
+
+model HabitCompletion {
+  id          String   @id @default(uuid())
+  habitId     String
+  completedAt DateTime @default(now())
+
+  habit Habit @relation(fields: [habitId], references: [id])
+}

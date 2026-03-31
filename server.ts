@@ -1,5 +1,5 @@
 import { prisma } from "./prisma.ts";
-import express from "express";
+import express, {request} from "express";
 import Joi from "joi";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -28,12 +28,12 @@ async function main() {
   //     else return true;
   // };
 
-  const app = express()
+  const app = express();
+  app.use(express.json());
+
   app.get("/", (req, res) => {
     res.send("Hello world");
   });
-
-  app.use(express.json());
 
   app.get("/api/auth/register", (req, res) => {
     res.send("Hello from register tab");
@@ -71,7 +71,6 @@ async function main() {
 
       res.status(201).send({
         message: "User created successfully",
-        data: value
       });        
     } catch (error) {
       console.log(error);
@@ -83,8 +82,8 @@ async function main() {
   app.post("/api/auth/login", async (req, res) => {
     
     const Schema = Joi.object({
-      email: Joi.string().email().required,
-      hashPassword: Joi.string().min(8).required
+      email: Joi.string().email().required(),
+      hashPassword: Joi.string().min(8).required()
     });
 
     const {value, error } = Schema.validate(req.body);
@@ -97,11 +96,15 @@ async function main() {
       if (!user) {
         return res.status(400).send("Invalid email or password.");
       }
+      const validatePassword = await(bcrypt.compare(value.hashPassword, user.hashPassword));
+      if (!validatePassword) {
+        return res.status(400).send("Invalid email or password.");
+      }
 
       let data_user = {
-        username: value.username,
-        email: value.email,
-        hashPassword: value.hashPassword
+        id: user.id,
+        username: user.username,
+        email: user.email
       };
 
       let jwtSecretKey = process.env.JWT_SECRET;
@@ -109,7 +112,7 @@ async function main() {
         return res.status(500).send("JWT secret key is not configured.");
       }
 
-      let token_jwt = jwt.sign(data_user, jwtSecretKey);
+      let token_jwt = jwt.sign(data_user, jwtSecretKey, {expiresIn: "7d"});
 
       res.send({token: token_jwt});
     } catch (error) {
@@ -123,12 +126,4 @@ async function main() {
 }
 
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+main();

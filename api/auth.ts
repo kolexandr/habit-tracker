@@ -1,38 +1,46 @@
-import {Router} from "express";
-import Joi from "joi";
+import {Request, Response, Router} from "express";
+import {z} from "zod";
 import {prisma} from "../prisma.ts"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const router = Router();
 
+const RegisterSchema = z.object({
+  username: z.string().min(3),
+  email: z.email(),
+  hashPassword: z.string().min(8)
+});
 
-router.post("/register", async (req, res) => {
-  const Schema = Joi.object({
-    username: Joi.string().min(3).required(),
-    email: Joi.string().email().required(),
-    hashPassword: Joi.string().min(8).required()
-  });
+const LoginSchema = z.object({
+  email: z.email(),
+  hashPassword: z.string().min(8)
+});
 
-  const {error, value} = Schema.validate(req.body);
-  if (error) {
+type RegisterDto = z.output<typeof RegisterSchema>;
+type LoginDto = z.output<typeof LoginSchema>;
+
+router.post("/register", async (req:Request, res:Response) => {
+
+  const result = RegisterSchema.safeParse(req.body)
+
+  if (!result.success) {
     return res.status(400).send("Invalid email or password.");
   }
-  
-  const saltRounds = 10;
+  const data : RegisterDto = result.data;
 
-  const cryptPassword = await bcrypt.hash(req.body.hashPassword, saltRounds);
+  const cryptPassword = await bcrypt.hash(data.hashPassword, 10);
 
-  console.log("Original: ", req.body.hashPassword)
+  console.log("Original: ", data.hashPassword)
   console.log("Hashed: ", cryptPassword)
-  value.hashPassword = cryptPassword;
+  const hashedPassword = cryptPassword;
   
   try {
     const user = await prisma.user.create({
       data: {
-        username: value.username,
-        email: value.email,
-        hashPassword: value.hashPassword
+        username: data.username,
+        email: data.email,
+        hashPassword: hashedPassword
       } 
     });
 
@@ -47,24 +55,20 @@ router.post("/register", async (req, res) => {
   
 });
 
-router.post("/login", async (req, res) => {
-    
-  const Schema = Joi.object({
-    email: Joi.string().email().required(),
-    hashPassword: Joi.string().min(8).required()
-  });
+router.post("/login", async (req:Request, res:Response) => {
 
-  const {value, error } = Schema.validate(req.body);
-  if (error) {
+  const result = LoginSchema.safeParse(req.body)
+  if (!result.success) {
     return res.status(400).send("Invalid email or password.");
   }
 
+  const data : LoginDto = result.data;
   try {
-    const user = await prisma.user.findUnique({where: {email: value.email}});
+    const user = await prisma.user.findUnique({where: {email: data.email}});
     if (!user) {
       return res.status(400).send("Invalid email or password.");
     }
-    const validatePassword = await (bcrypt.compare(value.hashPassword, user.hashPassword));
+    const validatePassword = await (bcrypt.compare(data.hashPassword, user.hashPassword));
     if (!validatePassword) {
       return res.status(400).send("Invalid email or password.");
     }
@@ -75,7 +79,7 @@ router.post("/login", async (req, res) => {
       email: user.email
     };
 
-    let jwtSecretKey = process.env.JWT_SECRET;
+    let jwtSecretKey = process.env.JWT_SECRET!;
     if (!jwtSecretKey) {
       return res.status(500).send("JWT secret key is not configured.");
     }

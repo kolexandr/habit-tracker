@@ -36,11 +36,6 @@ async function main() {
   app.get("/", (req, res) => {
     res.send("Hello world");
   });
-
-  app.get("/api/auth/register", (req, res) => {
-    res.send("Hello from register tab");
-  });
-
   app.listen(PORT, () => console.log(`Server is running on localhost:${PORT}`));
 }
 

@@ -27,19 +27,18 @@ router.post("/register", async (req:Request, res:Response) => {
   if (!result.success) {
     return res.status(400).send("Invalid email or password.");
   }
-  const data : RegisterDto = result.data;
 
-  const cryptPassword = await bcrypt.hash(data.hashPassword, 10);
+  const cryptPassword = await bcrypt.hash(result.data.hashPassword, 10);
 
-  console.log("Original: ", data.hashPassword)
+  console.log("Original: ", result.data.hashPassword)
   console.log("Hashed: ", cryptPassword)
   const hashedPassword = cryptPassword;
   
   try {
     const user = await prisma.user.create({
       data: {
-        username: data.username,
-        email: data.email,
+        username: result.data.username,
+        email: result.data.email,
         hashPassword: hashedPassword
       } 
     });
@@ -62,13 +61,12 @@ router.post("/login", async (req:Request, res:Response) => {
     return res.status(400).send("Invalid email or password.");
   }
 
-  const data : LoginDto = result.data;
   try {
-    const user = await prisma.user.findUnique({where: {email: data.email}});
+    const user = await prisma.user.findUnique({where: {email: result.data.email}});
     if (!user) {
       return res.status(400).send("Invalid email or password.");
     }
-    const validatePassword = await (bcrypt.compare(data.hashPassword, user.hashPassword));
+    const validatePassword = await (bcrypt.compare(result.data.hashPassword, user.hashPassword));
     if (!validatePassword) {
       return res.status(400).send("Invalid email or password.");
     }

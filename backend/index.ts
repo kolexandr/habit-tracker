@@ -1,12 +1,12 @@
-import { prisma } from "../prisma.ts";
 import path from "path";
 import express from "express";
 import dotenv from "dotenv";
-import AuthRoute from "./api/auth.ts";
-import {requireAuth} from "./middleware/auth.ts";
+import authRoute from "./src/api/auth.ts";
+import habitsRoute from "./src/api/habits.ts"
+import {requireAuth} from "./src/middleware/auth.ts";
 import rateLimit from "express-rate-limit"
 
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config();/
 const PORT = process.env.PORT;
 
 // write middleware for jwt token verification
@@ -31,12 +31,14 @@ async function main() {
   app.use(express.json());
   app.use(limiter);
   
-  app.use("/api/auth/", AuthRoute);
+  app.use("/api/auth/", authRoute);
+  app.use("api/habits/", requireAuth, habitsRoute);
 
   app.get("/", (req, res) => {
     res.send("Hello world");
   });
   app.listen(PORT, () => console.log(`Server is running on localhost:${PORT}`));
+
 }
 
 

@@ -245,7 +245,7 @@ export type HabitGroupByOutputType = {
   _max: HabitMaxAggregateOutputType | null
 }
 
-type GetHabitGroupByPayload<T extends HabitGroupByArgs> = Prisma.PrismaPromise<
+export type GetHabitGroupByPayload<T extends HabitGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<HabitGroupByOutputType, T['by']> &
       {

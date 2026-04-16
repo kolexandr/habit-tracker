@@ -144,7 +144,7 @@ export type HabitCompletionGroupByOutputType = {
   _max: HabitCompletionMaxAggregateOutputType | null
 }
 
-type GetHabitCompletionGroupByPayload<T extends HabitCompletionGroupByArgs> = Prisma.PrismaPromise<
+export type GetHabitCompletionGroupByPayload<T extends HabitCompletionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<HabitCompletionGroupByOutputType, T['by']> &
       {

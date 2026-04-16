@@ -74,3 +74,5 @@ router.delete("/:id", async (req: Request, res: Response, next: NextFunction) =>
     res.status(404).json({ message: "No habit was found."});
   }
 });
+
+export default router;

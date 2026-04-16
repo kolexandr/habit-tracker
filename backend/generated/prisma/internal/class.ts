@@ -17,8 +17,8 @@ import type * as Prisma from "./prismaNamespace.ts"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.5.0",
-  "engineVersion": "280c870be64f457428992c43c1f6d557fab6e29e",
+  "clientVersion": "7.7.0",
+  "engineVersion": "75cbdc1eb7150937890ad5465d861175c6624711",
   "activeProvider": "postgresql",
   "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum ScheduleType {\n  DAILY\n  WEEKLY\n  CUSTOM\n}\n\nenum HabitStatus {\n  ACTIVE\n  ARCHIVE\n}\n\nmodel User {\n  id                String   @id @default(uuid())\n  username          String   @unique\n  email             String   @unique\n  hashPassword      String\n  productivityScore Int      @default(0)\n  habits            Habit[]\n  createdAt         DateTime @default(now())\n}\n\nmodel Habit {\n  id                String            @id @default(uuid())\n  name              String\n  description       String?\n  scheduleType      ScheduleType\n  habitStatus       HabitStatus       @default(ACTIVE)\n  isPlatformCreated Boolean           @default(false)\n  isPublic          Boolean           @default(true)\n  currentStreak     Int               @default(0)\n  targetPerPeriod   Int               @default(1)\n  userId            String\n  user              User              @relation(fields: [userId], references: [id])\n  createdAt         DateTime          @default(now())\n  endDate           DateTime?\n  habitCompletions  HabitCompletion[]\n}\n\nmodel HabitCompletion {\n  id          String   @id @default(uuid())\n  habitId     String\n  completedAt DateTime @default(now())\n\n  habit Habit @relation(fields: [habitId], references: [id])\n}\n",
   "runtimeDataModel": {

@@ -41,6 +41,7 @@ export type HabitMinAggregateOutputType = {
   name: string | null
   description: string | null
   scheduleType: $Enums.ScheduleType | null
+  habitType: $Enums.HabitType | null
   habitStatus: $Enums.HabitStatus | null
   isPlatformCreated: boolean | null
   isPublic: boolean | null
@@ -56,6 +57,7 @@ export type HabitMaxAggregateOutputType = {
   name: string | null
   description: string | null
   scheduleType: $Enums.ScheduleType | null
+  habitType: $Enums.HabitType | null
   habitStatus: $Enums.HabitStatus | null
   isPlatformCreated: boolean | null
   isPublic: boolean | null
@@ -71,6 +73,7 @@ export type HabitCountAggregateOutputType = {
   name: number
   description: number
   scheduleType: number
+  habitType: number
   habitStatus: number
   isPlatformCreated: number
   isPublic: number
@@ -98,6 +101,7 @@ export type HabitMinAggregateInputType = {
   name?: true
   description?: true
   scheduleType?: true
+  habitType?: true
   habitStatus?: true
   isPlatformCreated?: true
   isPublic?: true
@@ -113,6 +117,7 @@ export type HabitMaxAggregateInputType = {
   name?: true
   description?: true
   scheduleType?: true
+  habitType?: true
   habitStatus?: true
   isPlatformCreated?: true
   isPublic?: true
@@ -128,6 +133,7 @@ export type HabitCountAggregateInputType = {
   name?: true
   description?: true
   scheduleType?: true
+  habitType?: true
   habitStatus?: true
   isPlatformCreated?: true
   isPublic?: true
@@ -230,6 +236,7 @@ export type HabitGroupByOutputType = {
   name: string
   description: string | null
   scheduleType: $Enums.ScheduleType
+  habitType: $Enums.HabitType
   habitStatus: $Enums.HabitStatus
   isPlatformCreated: boolean
   isPublic: boolean
@@ -268,6 +275,7 @@ export type HabitWhereInput = {
   name?: Prisma.StringFilter<"Habit"> | string
   description?: Prisma.StringNullableFilter<"Habit"> | string | null
   scheduleType?: Prisma.EnumScheduleTypeFilter<"Habit"> | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFilter<"Habit"> | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFilter<"Habit"> | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFilter<"Habit"> | boolean
   isPublic?: Prisma.BoolFilter<"Habit"> | boolean
@@ -285,6 +293,7 @@ export type HabitOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
+  habitType?: Prisma.SortOrder
   habitStatus?: Prisma.SortOrder
   isPlatformCreated?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
@@ -305,6 +314,7 @@ export type HabitWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Habit"> | string
   description?: Prisma.StringNullableFilter<"Habit"> | string | null
   scheduleType?: Prisma.EnumScheduleTypeFilter<"Habit"> | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFilter<"Habit"> | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFilter<"Habit"> | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFilter<"Habit"> | boolean
   isPublic?: Prisma.BoolFilter<"Habit"> | boolean
@@ -322,6 +332,7 @@ export type HabitOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
+  habitType?: Prisma.SortOrder
   habitStatus?: Prisma.SortOrder
   isPlatformCreated?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
@@ -345,6 +356,7 @@ export type HabitScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Habit"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Habit"> | string | null
   scheduleType?: Prisma.EnumScheduleTypeWithAggregatesFilter<"Habit"> | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeWithAggregatesFilter<"Habit"> | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusWithAggregatesFilter<"Habit"> | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolWithAggregatesFilter<"Habit"> | boolean
   isPublic?: Prisma.BoolWithAggregatesFilter<"Habit"> | boolean
@@ -360,6 +372,7 @@ export type HabitCreateInput = {
   name: string
   description?: string | null
   scheduleType: $Enums.ScheduleType
+  habitType?: $Enums.HabitType
   habitStatus?: $Enums.HabitStatus
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -376,6 +389,7 @@ export type HabitUncheckedCreateInput = {
   name: string
   description?: string | null
   scheduleType: $Enums.ScheduleType
+  habitType?: $Enums.HabitType
   habitStatus?: $Enums.HabitStatus
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -392,6 +406,7 @@ export type HabitUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -408,6 +423,7 @@ export type HabitUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -424,6 +440,7 @@ export type HabitCreateManyInput = {
   name: string
   description?: string | null
   scheduleType: $Enums.ScheduleType
+  habitType?: $Enums.HabitType
   habitStatus?: $Enums.HabitStatus
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -439,6 +456,7 @@ export type HabitUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -453,6 +471,7 @@ export type HabitUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -478,6 +497,7 @@ export type HabitCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
+  habitType?: Prisma.SortOrder
   habitStatus?: Prisma.SortOrder
   isPlatformCreated?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
@@ -498,6 +518,7 @@ export type HabitMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
+  habitType?: Prisma.SortOrder
   habitStatus?: Prisma.SortOrder
   isPlatformCreated?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
@@ -513,6 +534,7 @@ export type HabitMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   scheduleType?: Prisma.SortOrder
+  habitType?: Prisma.SortOrder
   habitStatus?: Prisma.SortOrder
   isPlatformCreated?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
@@ -583,6 +605,10 @@ export type EnumScheduleTypeFieldUpdateOperationsInput = {
   set?: $Enums.ScheduleType
 }
 
+export type EnumHabitTypeFieldUpdateOperationsInput = {
+  set?: $Enums.HabitType
+}
+
 export type EnumHabitStatusFieldUpdateOperationsInput = {
   set?: $Enums.HabitStatus
 }
@@ -614,6 +640,7 @@ export type HabitCreateWithoutUserInput = {
   name: string
   description?: string | null
   scheduleType: $Enums.ScheduleType
+  habitType?: $Enums.HabitType
   habitStatus?: $Enums.HabitStatus
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -629,6 +656,7 @@ export type HabitUncheckedCreateWithoutUserInput = {
   name: string
   description?: string | null
   scheduleType: $Enums.ScheduleType
+  habitType?: $Enums.HabitType
   habitStatus?: $Enums.HabitStatus
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -673,6 +701,7 @@ export type HabitScalarWhereInput = {
   name?: Prisma.StringFilter<"Habit"> | string
   description?: Prisma.StringNullableFilter<"Habit"> | string | null
   scheduleType?: Prisma.EnumScheduleTypeFilter<"Habit"> | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFilter<"Habit"> | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFilter<"Habit"> | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFilter<"Habit"> | boolean
   isPublic?: Prisma.BoolFilter<"Habit"> | boolean
@@ -688,6 +717,7 @@ export type HabitCreateWithoutHabitCompletionsInput = {
   name: string
   description?: string | null
   scheduleType: $Enums.ScheduleType
+  habitType?: $Enums.HabitType
   habitStatus?: $Enums.HabitStatus
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -703,6 +733,7 @@ export type HabitUncheckedCreateWithoutHabitCompletionsInput = {
   name: string
   description?: string | null
   scheduleType: $Enums.ScheduleType
+  habitType?: $Enums.HabitType
   habitStatus?: $Enums.HabitStatus
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -734,6 +765,7 @@ export type HabitUpdateWithoutHabitCompletionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -749,6 +781,7 @@ export type HabitUncheckedUpdateWithoutHabitCompletionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -764,6 +797,7 @@ export type HabitCreateManyUserInput = {
   name: string
   description?: string | null
   scheduleType: $Enums.ScheduleType
+  habitType?: $Enums.HabitType
   habitStatus?: $Enums.HabitStatus
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -778,6 +812,7 @@ export type HabitUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -793,6 +828,7 @@ export type HabitUncheckedUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -808,6 +844,7 @@ export type HabitUncheckedUpdateManyWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleType?: Prisma.EnumScheduleTypeFieldUpdateOperationsInput | $Enums.ScheduleType
+  habitType?: Prisma.EnumHabitTypeFieldUpdateOperationsInput | $Enums.HabitType
   habitStatus?: Prisma.EnumHabitStatusFieldUpdateOperationsInput | $Enums.HabitStatus
   isPlatformCreated?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -853,6 +890,7 @@ export type HabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   name?: boolean
   description?: boolean
   scheduleType?: boolean
+  habitType?: boolean
   habitStatus?: boolean
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -871,6 +909,7 @@ export type HabitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   name?: boolean
   description?: boolean
   scheduleType?: boolean
+  habitType?: boolean
   habitStatus?: boolean
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -887,6 +926,7 @@ export type HabitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   name?: boolean
   description?: boolean
   scheduleType?: boolean
+  habitType?: boolean
   habitStatus?: boolean
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -903,6 +943,7 @@ export type HabitSelectScalar = {
   name?: boolean
   description?: boolean
   scheduleType?: boolean
+  habitType?: boolean
   habitStatus?: boolean
   isPlatformCreated?: boolean
   isPublic?: boolean
@@ -913,7 +954,7 @@ export type HabitSelectScalar = {
   endDate?: boolean
 }
 
-export type HabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "scheduleType" | "habitStatus" | "isPlatformCreated" | "isPublic" | "currentStreak" | "targetPerPeriod" | "userId" | "createdAt" | "endDate", ExtArgs["result"]["habit"]>
+export type HabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "scheduleType" | "habitType" | "habitStatus" | "isPlatformCreated" | "isPublic" | "currentStreak" | "targetPerPeriod" | "userId" | "createdAt" | "endDate", ExtArgs["result"]["habit"]>
 export type HabitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   habitCompletions?: boolean | Prisma.Habit$habitCompletionsArgs<ExtArgs>
@@ -937,6 +978,7 @@ export type $HabitPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     name: string
     description: string | null
     scheduleType: $Enums.ScheduleType
+    habitType: $Enums.HabitType
     habitStatus: $Enums.HabitStatus
     isPlatformCreated: boolean
     isPublic: boolean
@@ -1374,6 +1416,7 @@ export interface HabitFieldRefs {
   readonly name: Prisma.FieldRef<"Habit", 'String'>
   readonly description: Prisma.FieldRef<"Habit", 'String'>
   readonly scheduleType: Prisma.FieldRef<"Habit", 'ScheduleType'>
+  readonly habitType: Prisma.FieldRef<"Habit", 'HabitType'>
   readonly habitStatus: Prisma.FieldRef<"Habit", 'HabitStatus'>
   readonly isPlatformCreated: Prisma.FieldRef<"Habit", 'Boolean'>
   readonly isPublic: Prisma.FieldRef<"Habit", 'Boolean'>

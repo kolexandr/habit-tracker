@@ -18,6 +18,15 @@ enum HabitStatus {
   ARCHIVE
 }
 
+enum HabitType {
+  HEALTH
+  PRODUCTIVITY
+  MINDFULNESS
+  FITNESS
+  LEARNING
+  OTHER
+}
+
 model User {
   id                String   @id @default(uuid())
   username          String   @unique
@@ -33,6 +42,7 @@ model Habit {
   name              String
   description       String?
   scheduleType      ScheduleType
+  habitType         HabitType         @default(OTHER)
   habitStatus       HabitStatus       @default(ACTIVE)
   isPlatformCreated Boolean           @default(false)
   isPublic          Boolean           @default(true)

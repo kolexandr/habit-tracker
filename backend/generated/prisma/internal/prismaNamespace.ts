@@ -684,6 +684,7 @@ export const HabitScalarFieldEnum = {
   name: 'name',
   description: 'description',
   scheduleType: 'scheduleType',
+  habitType: 'habitType',
   habitStatus: 'habitStatus',
   isPlatformCreated: 'isPlatformCreated',
   isPublic: 'isPublic',
@@ -789,6 +790,20 @@ export type EnumScheduleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
  * Reference to a field of type 'ScheduleType[]'
  */
 export type ListEnumScheduleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScheduleType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'HabitType'
+ */
+export type EnumHabitTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HabitType'>
+    
+
+
+/**
+ * Reference to a field of type 'HabitType[]'
+ */
+export type ListEnumHabitTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HabitType[]'>
     
 
 

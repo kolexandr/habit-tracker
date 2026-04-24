@@ -4,9 +4,10 @@ import dotenv from "dotenv";
 import authRoute from "./src/api/auth.ts";
 import habitsRoute from "./src/api/habits.ts"
 import {requireAuth} from "./src/middleware/auth.ts";
-import rateLimit from "express-rate-limit"
+import rateLimit from "express-rate-limit";
+import geminiRoute from "./src/api/gemini.ts";
 
-dotenv.config();/
+dotenv.config();
 const PORT = process.env.PORT;
 
 // write middleware for jwt token verification
@@ -32,7 +33,8 @@ async function main() {
   app.use(limiter);
   
   app.use("/api/auth/", authRoute);
-  app.use("api/habits/", requireAuth, habitsRoute);
+  app.use("/api/habits/", requireAuth, habitsRoute);
+  app.use("/api/gemini/", requireAuth, geminiRoute);
 
   app.get("/", (req, res) => {
     res.send("Hello world");

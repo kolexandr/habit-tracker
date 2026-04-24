@@ -89,6 +89,7 @@ export const HabitScalarFieldEnum = {
   name: 'name',
   description: 'description',
   scheduleType: 'scheduleType',
+  habitType: 'habitType',
   habitStatus: 'habitStatus',
   isPlatformCreated: 'isPlatformCreated',
   isPublic: 'isPublic',

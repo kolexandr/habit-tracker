@@ -24,3 +24,15 @@ export const HabitStatus = {
 } as const
 
 export type HabitStatus = (typeof HabitStatus)[keyof typeof HabitStatus]
+
+
+export const HabitType = {
+  HEALTH: 'HEALTH',
+  PRODUCTIVITY: 'PRODUCTIVITY',
+  MINDFULNESS: 'MINDFULNESS',
+  FITNESS: 'FITNESS',
+  LEARNING: 'LEARNING',
+  OTHER: 'OTHER'
+} as const
+
+export type HabitType = (typeof HabitType)[keyof typeof HabitType]

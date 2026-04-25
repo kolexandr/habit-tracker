@@ -1,27 +1,15 @@
-import path from "path";
+import "dotenv/config"
 import express from "express";
-import dotenv from "dotenv";
 import authRoute from "./src/api/auth.ts";
 import habitsRoute from "./src/api/habits.ts"
 import {requireAuth} from "./src/middleware/auth.ts";
 import rateLimit from "express-rate-limit";
 import geminiRoute from "./src/api/gemini.ts";
 
-dotenv.config();
 const PORT = process.env.PORT;
 
-// write middleware for jwt token verification
 
 async function main() {
-  // Fetch all users with their habits
-  // const allUsers = await prisma.user.findMany({
-  //   // include: {
-  //   //   habits: true,
-  //   // },
-  // });
-  // console.log("All users:", JSON.stringify(allUsers, null, 2));
-  
-
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,

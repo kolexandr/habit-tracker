@@ -25,7 +25,6 @@ const habitPatchSchema = z.object({
   targetPerPeriod: z.number().int().positive().optional(),
 }).strict();
 
-type HabitDto = z.output<typeof habitSchema>;
 
 router.get("/", async (req: Request, res: Response) => {
   const userId = req.user!.id;

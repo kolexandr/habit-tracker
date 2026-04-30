@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { apiFetch } from '../lib/api';
 
 type AuthUser = {
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshAuth = async () => {
+  const refreshAuth = useCallback(async () => {
     try {
       const response = await apiFetch('/api/auth/me');
 
@@ -42,9 +42,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await apiFetch('/api/auth/logout', {
         method: 'POST',
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setUser(null);
     }
-  };
+  }, []);
 
   useEffect(() => {
     void refreshAuth();

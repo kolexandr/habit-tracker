@@ -8,6 +8,7 @@ type Habit = {
   scheduleType: 'DAILY' | 'WEEKLY' | 'CUSTOM';
   habitStatus: 'ACTIVE' | 'ARCHIVE';
   currentStreak: number;
+  habitCompletions?: { id: string }[];
 };
 
 type ProfileSummary = {
@@ -17,7 +18,7 @@ type ProfileSummary = {
 };
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, refreshAuth } = useAuth();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [summary, setSummary] = useState<ProfileSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,8 +27,9 @@ const ProfilePage = () => {
   useEffect(() => {
     const loadProfileData = async () => {
       try {
+        await refreshAuth();
         const [habitsResponse, summaryResponse] = await Promise.all([
-          apiFetch('/api/habits/'),
+          apiFetch('/api/habits/mine'),
           apiFetch('/api/auth/profile-summary'),
         ]);
 
@@ -56,7 +58,7 @@ const ProfilePage = () => {
     };
 
     void loadProfileData();
-  }, []);
+  }, [refreshAuth]);
 
   const stats = useMemo(() => {
     return [

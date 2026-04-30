@@ -9,7 +9,9 @@ type Habit = {
   habitStatus: 'ACTIVE' | 'ARCHIVE';
   scheduleType: 'DAILY' | 'WEEKLY' | 'CUSTOM';
   targetPerPeriod: number;
-  currentStreak: number;
+  user: {
+    username: string;
+  };
 };
 
 const categories = ['All', 'Health', 'Productivity', 'Mindfulness', 'Fitness', 'Learning', 'Other'] as const;
@@ -19,6 +21,8 @@ const Library = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<(typeof categories)[number]>('All');
   const [isLoading, setIsLoading] = useState(true);
+  const [claimingHabitId, setClaimingHabitId] = useState<string | null>(null);
+  const [claimedHabitIds, setClaimedHabitIds] = useState<string[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -54,6 +58,33 @@ const Library = () => {
       return categoryMatches && searchMatches;
     });
   }, [habits, searchTerm, selectedCategory]);
+
+  const handleClaim = async (habitId: string) => {
+    setClaimingHabitId(habitId);
+    setError('');
+
+    try {
+      const response = await apiFetch(`/api/habits/${habitId}/claim`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Could not claim this habit.'));
+      }
+
+      setClaimedHabitIds((current) =>
+        current.includes(habitId) ? current : [...current, habitId],
+      );
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Could not claim this habit.',
+      );
+    } finally {
+      setClaimingHabitId(null);
+    }
+  };
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -101,8 +132,20 @@ const Library = () => {
             </div>
             <div className="mt-auto flex items-center justify-between text-sm text-slate-600">
               <span>Target: {habit.targetPerPeriod}</span>
-              <span>Streak: {habit.currentStreak}</span>
+              <span>By {habit.user.username}</span>
             </div>
+            <button
+              type="button"
+              disabled={claimingHabitId === habit.id || claimedHabitIds.includes(habit.id)}
+              onClick={() => void handleClaim(habit.id)}
+              className="mt-4 w-full rounded-lg border-2 border-gray-800 py-2 font-bold transition hover:bg-gray-800 hover:text-white disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
+            >
+              {claimedHabitIds.includes(habit.id)
+                ? 'Claimed'
+                : claimingHabitId === habit.id
+                  ? 'Claiming...'
+                  : 'Claim'}
+            </button>
           </div>
         ))}
       </div>

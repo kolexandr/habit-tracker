@@ -63,7 +63,9 @@ router.get("/me", requireAuth, async (req: Request, res: Response) => {
     return res.status(200).json({ user });
   } catch (error) {
     console.error("GET /api/auth/me failed:", error);
-    return res.status(500).json({ message: "Could not load user profile." });
+    return res.status(500).json({
+      message: error instanceof Error ? error.message : "Could not load user profile.",
+    });
   }
 });
 
@@ -108,7 +110,9 @@ router.get("/profile-summary", requireAuth, async (req: Request, res: Response) 
     });
   } catch (error) {
     console.error("GET /api/auth/profile-summary failed:", error);
-    return res.status(500).json({ message: "Could not load profile summary." });
+    return res.status(500).json({
+      message: error instanceof Error ? error.message : "Could not load profile summary.",
+    });
   }
 });
 

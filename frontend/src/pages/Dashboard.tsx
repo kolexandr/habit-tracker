@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { useCallback, useEffect, useMemo, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import HabitCard from '../components/UI/HabitCard';
 import { apiFetch, readApiError } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -45,18 +45,15 @@ type GenerationResponse = {
 };
 
 type PromptComposerProps = {
-  elevated?: boolean;
-  compact?: boolean;
   prompt: string;
   isGenerating: boolean;
   generationError: string;
-  focusedPromptRef?: React.RefObject<HTMLTextAreaElement | null>;
-  onOpenFocusMode: () => void;
-  onCloseFocusMode: () => void;
   onPromptChange: (value: string) => void;
   onPromptSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onPromptKeyDown: (event: ReactKeyboardEvent<HTMLTextAreaElement>) => void;
 };
+
+type CoachViewState = 'idle' | 'loading' | 'results';
 
 const scheduleOptions: Habit['scheduleType'][] = ['DAILY', 'WEEKLY', 'CUSTOM'];
 const habitTypeOptions: Habit['habitType'][] = [
@@ -254,77 +251,55 @@ const HabitFormFields = ({
 );
 
 const PromptComposer = ({
-  elevated = false,
-  compact = false,
   prompt,
   isGenerating,
   generationError,
-  focusedPromptRef,
-  onOpenFocusMode,
-  onCloseFocusMode,
   onPromptChange,
   onPromptSubmit,
   onPromptKeyDown,
 }: PromptComposerProps) => (
   <form
     onSubmit={onPromptSubmit}
-    className={`rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-xl transition-all ${
-      elevated ? 'p-4 sm:p-5' : 'p-2 sm:p-3'
-    }`}
+    className="rounded-[1.75rem] border border-slate-200 bg-white/95 p-3 shadow-xl backdrop-blur sm:p-4"
   >
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-amber-600">AI Habit Coach</p>
-          <p className="text-sm text-slate-500">
-            Turn a goal into a set of claimable habit suggestions.
-          </p>
-        </div>
-        {elevated && (
-          <button
-            type="button"
-            onClick={onCloseFocusMode}
-            className="rounded-full border border-slate-200 px-3 py-1 text-sm font-semibold text-slate-600 hover:border-slate-400"
-          >
-            Close
-          </button>
-        )}
-      </div>
-
       <textarea
-        ref={elevated ? focusedPromptRef : undefined}
         value={prompt}
-        readOnly={!elevated && !compact}
-        onClick={() => {
-          if (!elevated && !compact) {
-            onOpenFocusMode();
-          }
-        }}
         onChange={(event) => onPromptChange(event.target.value)}
-        onKeyDown={elevated || compact ? onPromptKeyDown : undefined}
-        rows={elevated ? 6 : compact ? 3 : 2}
-        placeholder="Describe your goal and the routine you want help building..."
-        className={`w-full resize-none rounded-2xl border border-transparent bg-slate-50 px-4 py-3 text-slate-700 outline-none transition focus:border-slate-300 ${
-          elevated ? 'text-base' : 'text-sm sm:text-base'
-        } ${!elevated && !compact ? 'cursor-text' : ''}`}
+        onKeyDown={onPromptKeyDown}
+        rows={2}
+        placeholder="What is your goal this month?"
+        className="min-h-20 w-full resize-none rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400 focus:bg-white sm:text-base"
       />
 
       {generationError && <p className="text-sm text-red-600">{generationError}</p>}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between gap-3">
         <p className="text-xs text-slate-400">
-          Press `Enter` to generate, `Shift+Enter` for a new line, `Esc` to leave focus mode.
+          Press `Enter` to generate, `Shift+Enter` for a new line.
         </p>
         <button
           type="submit"
           disabled={isGenerating}
-          className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isGenerating ? 'Generating...' : 'Generate Habits'}
+          {isGenerating ? 'Generating...' : 'Generate'}
         </button>
       </div>
     </div>
   </form>
+);
+
+const CoachLoadingState = () => (
+  <section className="rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-xl sm:p-12">
+    <p className="text-sm font-bold uppercase tracking-[0.22em] text-amber-600">AI Habit Coach</p>
+    <h2 className="mt-4 text-2xl font-bold text-slate-900 sm:text-3xl">Consulting your personal coach...</h2>
+    <div className="mt-6 flex items-center justify-center gap-2">
+      <span className="h-3 w-3 rounded-full bg-slate-900 animate-[pulse_1.1s_ease-in-out_infinite]" />
+      <span className="h-3 w-3 rounded-full bg-slate-700 animate-[pulse_1.1s_ease-in-out_0.18s_infinite]" />
+      <span className="h-3 w-3 rounded-full bg-slate-500 animate-[pulse_1.1s_ease-in-out_0.36s_infinite]" />
+    </div>
+  </section>
 );
 
 const Dashboard = () => {
@@ -341,7 +316,6 @@ const Dashboard = () => {
   const [modalError, setModalError] = useState('');
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [prompt, setPrompt] = useState('');
-  const [isPromptFocused, setIsPromptFocused] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState('');
   const [generatedCommentary, setGeneratedCommentary] = useState('');
@@ -349,7 +323,6 @@ const Dashboard = () => {
   const [generatedHabits, setGeneratedHabits] = useState<GeneratedHabit[]>([]);
   const [claimedGeneratedHabitNames, setClaimedGeneratedHabitNames] = useState<string[]>([]);
   const [claimingGeneratedHabitName, setClaimingGeneratedHabitName] = useState<string | null>(null);
-  const focusedPromptRef = useRef<HTMLTextAreaElement | null>(null);
 
   const loadHabits = useCallback(async () => {
     try {
@@ -373,27 +346,6 @@ const Dashboard = () => {
   useEffect(() => {
     void loadHabits();
   }, [loadHabits]);
-
-  useEffect(() => {
-    if (!isPromptFocused) {
-      return;
-    }
-
-    window.setTimeout(() => {
-      focusedPromptRef.current?.focus();
-      const length = focusedPromptRef.current?.value.length ?? 0;
-      focusedPromptRef.current?.setSelectionRange(length, length);
-    }, 0);
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsPromptFocused(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPromptFocused]);
 
   useEffect(() => {
     if (!generatedCommentary) {
@@ -430,6 +382,15 @@ const Dashboard = () => {
     () => habits.find((habit) => habit.id === selectedHabitId) ?? null,
     [habits, selectedHabitId],
   );
+
+  const coachViewState: CoachViewState = isGenerating
+    ? 'loading'
+    : generatedCommentary || generatedHabits.length > 0
+      ? 'results'
+      : 'idle';
+
+  const displayedGeneratedHabits = generatedHabits.slice(0, 4);
+  const isCoachOverlayVisible = coachViewState !== 'idle';
 
   const completedCount = normalizedHabits.filter((habit) => habit.isCompleted).length;
   const progress =
@@ -626,7 +587,6 @@ const Dashboard = () => {
     setAnimatedCommentary('');
     setGeneratedHabits([]);
     setClaimedGeneratedHabitNames([]);
-    setIsPromptFocused(false);
 
     try {
       const response = await apiFetch('/api/gemini/', {
@@ -660,6 +620,17 @@ const Dashboard = () => {
       event.preventDefault();
       await handleGenerateHabits();
     }
+  };
+
+  const handleResetCoach = () => {
+    setPrompt('');
+    setIsGenerating(false);
+    setGenerationError('');
+    setGeneratedCommentary('');
+    setAnimatedCommentary('');
+    setGeneratedHabits([]);
+    setClaimedGeneratedHabitNames([]);
+    setClaimingGeneratedHabitName(null);
   };
 
   const handleClaimGeneratedHabit = async (generatedHabit: GeneratedHabit) => {
@@ -708,186 +679,170 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="max-w-4xl mx-auto space-y-8">
-        {(generatedCommentary || generatedHabits.length > 0 || isGenerating) && (
-          <section className="space-y-5">
-            <PromptComposer
-              compact
-              prompt={prompt}
-              isGenerating={isGenerating}
-              generationError={generationError}
-              onOpenFocusMode={() => setIsPromptFocused(true)}
-              onCloseFocusMode={() => setIsPromptFocused(false)}
-              onPromptChange={setPrompt}
-              onPromptSubmit={handlePromptSubmit}
-              onPromptKeyDown={handlePromptKeyDown}
-            />
+      <div className="mx-auto max-w-4xl">
+        <div className="relative pb-36">
+          <div
+            className={`space-y-8 transition-all duration-300 ${
+              isCoachOverlayVisible ? 'pointer-events-none scale-[0.99] blur-sm' : ''
+            }`}
+          >
+            <section className="flex flex-col gap-6 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-8">
+              <div className="relative mx-auto flex h-28 w-28 items-center justify-center sm:mx-0">
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle cx="56" cy="56" r="50" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100" />
+                  <circle
+                    cx="56"
+                    cy="56"
+                    r="50"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="transparent"
+                    strokeDasharray="314"
+                    strokeDashoffset={314 - (314 * progress) / 100}
+                    className="text-indigo-600 transition-all duration-1000 ease-out"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="absolute text-2xl font-black text-slate-800">{progress}%</span>
+              </div>
 
-            <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-              <p className="text-sm font-bold uppercase tracking-[0.22em] text-slate-400">Coach Commentary</p>
-              <p className="mt-4 min-h-16 text-base leading-8 text-slate-700">
-                {animatedCommentary}
-                {isGenerating && !animatedCommentary && 'Thinking through your goal...'}
-              </p>
-            </div>
+              <div className="text-center sm:text-left">
+                <h2 className="text-2xl font-bold text-slate-900">Current Progress</h2>
+                <p className="text-slate-500 font-medium">
+                  {completedCount} of {normalizedHabits.length} habits completed for the current period
+                </p>
+              </div>
+            </section>
 
-            {(generatedHabits.length > 0 || isGenerating) && (
-              <div className="grid gap-4 md:grid-cols-2">
-                {generatedHabits.map((habit, index) => {
-                  const isClaimed = claimedGeneratedHabitNames.includes(habit.name);
-                  const isClaiming = claimingGeneratedHabitName === habit.name;
+            <section className="space-y-4">
+              <div className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center sm:justify-between">
+                <h3 className="text-lg font-bold text-slate-800">Your Habits</h3>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={openCreateModal}
+                    className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+                  >
+                    Create Habit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openManageModal}
+                    className="rounded-xl border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-700 hover:border-indigo-400 hover:text-indigo-900"
+                  >
+                    Edit List
+                  </button>
+                </div>
+              </div>
 
-                  return (
-                    <article
-                      key={`${habit.name}-${index}`}
-                      className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm opacity-0 animate-[cardRise_0.55s_ease-out_forwards]"
-                      style={{ animationDelay: `${index * 120}ms` }}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <h3 className="text-xl font-bold text-slate-900">{habit.name}</h3>
-                          <p className="mt-2 text-sm leading-6 text-slate-500">
-                            {habit.description || 'Suggested by your AI habit coach.'}
-                          </p>
-                        </div>
-                        <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-amber-700">
-                          AI
-                        </span>
-                      </div>
+              {isLoading && <p className="px-2 text-slate-500">Loading your habits...</p>}
+              {error && <p className="px-2 text-red-600">{error}</p>}
+              {!isLoading && !error && normalizedHabits.length === 0 && (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-slate-500">
+                  You have no habits yet. Create one here or claim one from the library to get started.
+                </div>
+              )}
 
-                      <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-slate-500">
-                        <span className="rounded-full bg-slate-100 px-3 py-1">{formatLabel(habit.scheduleType)}</span>
-                        <span className="rounded-full bg-slate-100 px-3 py-1">{formatLabel(habit.habitType)}</span>
-                        <span className="rounded-full bg-slate-100 px-3 py-1">Target {habit.targetPerPeriod}</span>
-                      </div>
+              <div className="space-y-3">
+                {normalizedHabits.map((habit) => (
+                  <HabitCard
+                    key={habit.id}
+                    id={habit.id}
+                    title={`${habit.title} (${formatLabel(habit.scheduleType)})`}
+                    streak={habit.streak}
+                    isCompleted={habit.isCompleted}
+                    isToggling={togglingHabitId === habit.id}
+                    onToggle={handleToggleCompletion}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
 
+          {coachViewState !== 'idle' && (
+            <div className="absolute inset-0 z-20 rounded-[2rem] bg-white/35 p-2 backdrop-blur-md sm:p-4">
+              <div className="mx-auto max-w-4xl">
+                {coachViewState === 'loading' && <CoachLoadingState />}
+
+                {coachViewState === 'results' && (
+                  <section className="space-y-5">
+                    <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
+                      <p className="text-sm font-bold uppercase tracking-[0.22em] text-slate-400">Coach Commentary</p>
+                      <p className="mt-4 min-h-16 text-base leading-8 text-slate-700">
+                        {animatedCommentary}
+                      </p>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {displayedGeneratedHabits.map((habit, index) => {
+                        const isClaimed = claimedGeneratedHabitNames.includes(habit.name);
+                        const isClaiming = claimingGeneratedHabitName === habit.name;
+
+                        return (
+                          <article
+                            key={`${habit.name}-${index}`}
+                            className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm opacity-0 animate-[cardRise_0.55s_ease-out_forwards]"
+                            style={{ animationDelay: `${index * 120}ms` }}
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <h3 className="text-xl font-bold text-slate-900">{habit.name}</h3>
+                                <p className="mt-2 text-sm leading-6 text-slate-500">
+                                  {habit.description || 'Suggested by your AI habit coach.'}
+                                </p>
+                              </div>
+                              <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-amber-700">
+                                AI
+                              </span>
+                            </div>
+
+                            <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-slate-500">
+                              <span className="rounded-full bg-slate-100 px-3 py-1">{formatLabel(habit.scheduleType)}</span>
+                              <span className="rounded-full bg-slate-100 px-3 py-1">{formatLabel(habit.habitType)}</span>
+                              <span className="rounded-full bg-slate-100 px-3 py-1">Target {habit.targetPerPeriod}</span>
+                            </div>
+
+                            <button
+                              type="button"
+                              disabled={isClaimed || isClaiming}
+                              onClick={() => void handleClaimGeneratedHabit(habit)}
+                              className="mt-6 w-full rounded-2xl border-2 border-slate-900 px-4 py-3 font-bold text-slate-900 transition hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+                            >
+                              {isClaimed ? 'Claimed' : isClaiming ? 'Claiming...' : 'Claim Habit'}
+                            </button>
+                          </article>
+                        );
+                      })}
+                    </div>
+
+                    {generationError && (
+                      <p className="text-sm text-red-600">{generationError}</p>
+                    )}
+
+                    <div className="flex justify-center pt-2">
                       <button
                         type="button"
-                        disabled={isClaimed || isClaiming}
-                        onClick={() => void handleClaimGeneratedHabit(habit)}
-                        className="mt-6 w-full rounded-2xl border-2 border-slate-900 px-4 py-3 font-bold text-slate-900 transition hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+                        onClick={handleResetCoach}
+                        className="rounded-2xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:border-slate-500 hover:text-slate-900"
                       >
-                        {isClaimed ? 'Claimed' : isClaiming ? 'Claiming...' : 'Claim Habit'}
+                        Start over / Change Goal
                       </button>
-                    </article>
-                  );
-                })}
+                    </div>
+                  </section>
+                )}
               </div>
-            )}
-          </section>
-        )}
-
-        <section className="flex flex-col gap-6 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-8">
-          <div className="relative mx-auto flex h-28 w-28 items-center justify-center sm:mx-0">
-            <svg className="w-full h-full transform -rotate-90">
-              <circle cx="56" cy="56" r="50" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100" />
-              <circle
-                cx="56"
-                cy="56"
-                r="50"
-                stroke="currentColor"
-                strokeWidth="8"
-                fill="transparent"
-                strokeDasharray="314"
-                strokeDashoffset={314 - (314 * progress) / 100}
-                className="text-indigo-600 transition-all duration-1000 ease-out"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="absolute text-2xl font-black text-slate-800">{progress}%</span>
-          </div>
-
-          <div className="text-center sm:text-left">
-            <h2 className="text-2xl font-bold text-slate-900">Current Progress</h2>
-            <p className="text-slate-500 font-medium">
-              {completedCount} of {normalizedHabits.length} habits completed for the current period
-            </p>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <div className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="text-lg font-bold text-slate-800">Your Habits</h3>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={openCreateModal}
-                className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
-              >
-                Create Habit
-              </button>
-              <button
-                type="button"
-                onClick={openManageModal}
-                className="rounded-xl border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-700 hover:border-indigo-400 hover:text-indigo-900"
-              >
-                Edit List
-              </button>
-            </div>
-          </div>
-
-          {isLoading && <p className="px-2 text-slate-500">Loading your habits...</p>}
-          {error && <p className="px-2 text-red-600">{error}</p>}
-          {!isLoading && !error && normalizedHabits.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-slate-500">
-              You have no habits yet. Create one here or claim one from the library to get started.
             </div>
           )}
-
-          <div className="space-y-3">
-            {normalizedHabits.map((habit) => (
-              <HabitCard
-                key={habit.id}
-                id={habit.id}
-                title={`${habit.title} (${formatLabel(habit.scheduleType)})`}
-                streak={habit.streak}
-                isCompleted={habit.isCompleted}
-                isToggling={togglingHabitId === habit.id}
-                onToggle={handleToggleCompletion}
-              />
-            ))}
-          </div>
-        </section>
-
-        {!generatedCommentary && generatedHabits.length === 0 && (
-          <section className="h-36" />
-        )}
+        </div>
       </div>
 
-      {!generatedCommentary && generatedHabits.length === 0 && !isPromptFocused && (
+      {coachViewState === 'idle' && (
         <div className="fixed inset-x-0 bottom-0 z-30 px-4 pb-4">
           <div className="mx-auto max-w-4xl">
             <PromptComposer
               prompt={prompt}
               isGenerating={isGenerating}
               generationError={generationError}
-              onOpenFocusMode={() => setIsPromptFocused(true)}
-              onCloseFocusMode={() => setIsPromptFocused(false)}
-              onPromptChange={setPrompt}
-              onPromptSubmit={handlePromptSubmit}
-              onPromptKeyDown={handlePromptKeyDown}
-            />
-          </div>
-        </div>
-      )}
-
-      {isPromptFocused && (
-        <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/20 p-4 backdrop-blur-md"
-          onClick={() => setIsPromptFocused(false)}
-        >
-          <div
-            className="w-full max-w-4xl animate-[promptLift_0.35s_ease-out]"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <PromptComposer
-              elevated
-              prompt={prompt}
-              isGenerating={isGenerating}
-              generationError={generationError}
-              focusedPromptRef={focusedPromptRef}
-              onOpenFocusMode={() => setIsPromptFocused(true)}
-              onCloseFocusMode={() => setIsPromptFocused(false)}
               onPromptChange={setPrompt}
               onPromptSubmit={handlePromptSubmit}
               onPromptKeyDown={handlePromptKeyDown}

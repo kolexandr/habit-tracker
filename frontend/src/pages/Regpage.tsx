@@ -173,19 +173,6 @@ const Regpage = () => {
         <button type="button" className="text-sm text-gray-500 mt-4 underline block mx-auto">
           Forgot password?
         </button>
-
-        <div className="flex items-center my-6">
-          <div className="flex-1 border-t"></div>
-          <span className="px-3 text-gray-400 text-sm">or</span>
-          <div className="flex-1 border-t"></div>
-        </div>
-
-        <button
-          type="button"
-          className="w-full border py-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
-        >
-          Continue with Google
-        </button>
       </div>
     </div>
   );

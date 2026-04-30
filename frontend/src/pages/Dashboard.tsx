@@ -1,4 +1,3 @@
-import React from 'react';
 import HabitCard from '../components/UI/HabitCard'; // Assuming you saved the previous snippet
 
 const Dashboard = () => {

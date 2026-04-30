@@ -31,10 +31,11 @@ router.get("/", async (req: Request, res: Response) => {
 
   try {
    const habits = await prisma.habit.findMany({
-      where: {userId: userId}
+      where: {userId: userId},
     });
     res.json({data: habits}); 
   } catch (error) {
+    console.error("GET /api/habits failed:", error);
     return res.status(500).json({message: "Error retrieving error."})
   } 
 });

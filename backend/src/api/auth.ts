@@ -3,6 +3,7 @@ import {z} from "zod";
 import {prisma} from "../../prisma.ts"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { requireAuth } from "../middleware/auth.ts";
 
 const router = Router();
 
@@ -42,19 +43,86 @@ const LoginSchema = z
 type RegisterDto = z.output<typeof RegisterSchema>;
 type LoginDto = z.output<typeof LoginSchema>;
 
+router.get("/me", requireAuth, async (req: Request, res: Response) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        productivityScore: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.error("GET /api/auth/me failed:", error);
+    return res.status(500).json({ message: "Could not load user profile." });
+  }
+});
+
+router.post("/logout", async (_req: Request, res: Response) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  return res.status(200).json({ message: "Logged out successfully." });
+});
+
+router.get("/profile-summary", requireAuth, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+
+    const [totalHabits, totalCompletions, bestHabit] = await Promise.all([
+      prisma.habit.count({
+        where: { userId },
+      }),
+      prisma.habitCompletion.count({
+        where: {
+          habit: {
+            userId,
+          },
+        },
+      }),
+      prisma.habit.findFirst({
+        where: { userId },
+        orderBy: { currentStreak: "desc" },
+        select: { currentStreak: true },
+      }),
+    ]);
+
+    return res.status(200).json({
+      stats: {
+        totalHabits,
+        totalCompletions,
+        longestStreak: bestHabit?.currentStreak ?? 0,
+      },
+    });
+  } catch (error) {
+    console.error("GET /api/auth/profile-summary failed:", error);
+    return res.status(500).json({ message: "Could not load profile summary." });
+  }
+});
+
 router.post("/register", async (req:Request, res:Response) => {
 
   const result = RegisterSchema.safeParse(req.body)
 
   if (!result.success) {
-    return res.status(400).send("Invalid email or password.");
+    return res.status(400).json({message: "Invalid email or password."});
   }
 
   const rawPassword = result.data.password ?? result.data.hashPassword!; //may be changed
   const cryptPassword = await bcrypt.hash(rawPassword, 10);
 
-  console.log("Original: ", rawPassword)
-  console.log("Hashed: ", cryptPassword)
   const hashedPassword = cryptPassword;
   
   try {
@@ -67,12 +135,10 @@ router.post("/register", async (req:Request, res:Response) => {
     });
 
 
-    res.status(201).send({
-      message: "User created successfully",
-    });        
+    res.status(201).json({message: "User created successfully"});        
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal server error");  
+    res.status(500).json({message: "Internal server error"});  
   }
   
 });
@@ -81,18 +147,18 @@ router.post("/login", async (req:Request, res:Response) => {
 
   const result = LoginSchema.safeParse(req.body)
   if (!result.success) {
-    return res.status(400).send("Invalid email or password.");
+    return res.status(400).json({message: "Invalid email or password."});
   }
 
   try {
     const user = await prisma.user.findUnique({where: {email: result.data.email}});
     if (!user) {
-      return res.status(400).send("Invalid email or password.");
+      return res.status(400).json({message: "Invalid email or password."});
     }
     const rawPassword = result.data.password ?? result.data.hashPassword!; //may be changed
     const validatePassword = await (bcrypt.compare(rawPassword, user.hashPassword));
     if (!validatePassword) {
-      return res.status(400).send("Invalid email or password.");
+      return res.status(400).json({message: "Invalid email or password."});
     }
 
     let data_user = {
@@ -103,14 +169,23 @@ router.post("/login", async (req:Request, res:Response) => {
 
     let jwtSecretKey = process.env.JWT_SECRET!;
     if (!jwtSecretKey) {
-      return res.status(500).send("JWT secret key is not configured.");
+      return res.status(500).json({message: "JWT secret key is not configured."});
     }
 
-    let token_jwt = jwt.sign(data_user, jwtSecretKey, {expiresIn: "7d"}); 
+    let token_jwt = jwt.sign(data_user, jwtSecretKey); 
 
-    res.send({token: token_jwt});
+    res.cookie('token', token_jwt, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: 'strict',
+      maxAge: 3600000,
+    });
+
+    // res.json({message: token_jwt);
+
+    res.status(200).json({message: "Logged in successfully"});
   } catch (error) {
-    res.status(500).send("Something went wrong.");
+    res.status(500).json({message: "Something went wrong."});
   }  
 });
 

@@ -55,6 +55,7 @@ model Habit {
   habitCompletions  HabitCompletion[]
 }
 
+
 model HabitCompletion {
   id          String   @id @default(uuid())
   habitId     String

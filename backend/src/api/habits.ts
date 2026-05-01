@@ -172,7 +172,7 @@ router.post("/:id/claim", async (req: Request, res: Response) => {
     const existingHabit = await prisma.habit.findFirst({
       where: {
         userId,
-        name: sourceHabit.name,
+        id: sourceHabit.id,
       },
     });
 

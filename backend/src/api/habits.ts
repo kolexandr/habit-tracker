@@ -4,6 +4,8 @@ import {z} from "zod";
 import { ScheduleType, HabitStatus, HabitType } from "../../generated/prisma/enums.ts";
 
 const router = Router(); 
+const HABIT_NAME_MAX_LENGTH = 60;
+const HABIT_DESCRIPTION_MAX_LENGTH = 240;
 
 const getTodayRange = () => {
   const startOfDay = new Date();
@@ -35,8 +37,8 @@ const getCurrentPeriodRange = (scheduleType: ScheduleType) => {
 };
 
 const habitSchema = z.object({
-  name: z.string().min(3),
-  description: z.string().min(3).optional(),
+  name: z.string().trim().min(3).max(HABIT_NAME_MAX_LENGTH),
+  description: z.string().trim().min(3).max(HABIT_DESCRIPTION_MAX_LENGTH).optional(),
   scheduleType: z.enum(ScheduleType),
   habitType: z.enum(HabitType),
   habitStatus: z.enum(HabitStatus),
@@ -46,8 +48,8 @@ const habitSchema = z.object({
 });
 
 const habitPatchSchema = z.object({
-  name: z.string().min(3).optional(),
-  description: z.string().min(3).nullable().optional(),
+  name: z.string().trim().min(3).max(HABIT_NAME_MAX_LENGTH).optional(),
+  description: z.string().trim().min(3).max(HABIT_DESCRIPTION_MAX_LENGTH).nullable().optional(),
   scheduleType: z.enum(ScheduleType).optional(),
   habitType: z.enum(HabitType).optional(),
   habitStatus: z.enum(HabitStatus).optional(),

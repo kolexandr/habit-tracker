@@ -65,6 +65,8 @@ const habitTypeOptions: Habit['habitType'][] = [
   'OTHER',
 ];
 const statusOptions: Habit['habitStatus'][] = ['ACTIVE', 'ARCHIVE'];
+const HABIT_NAME_MAX_LENGTH = 60;
+const HABIT_DESCRIPTION_MAX_LENGTH = 240;
 
 const emptyFormValues: HabitFormValues = {
   name: '',
@@ -144,7 +146,11 @@ const HabitFormFields = ({
           className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
           required
           minLength={3}
+          maxLength={HABIT_NAME_MAX_LENGTH}
         />
+        <span className="block text-right text-xs text-slate-400">
+          {values.name.length}/{HABIT_NAME_MAX_LENGTH}
+        </span>
       </label>
 
       <label className="space-y-2">
@@ -223,7 +229,11 @@ const HabitFormFields = ({
         rows={4}
         className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
         placeholder="Optional description"
+        maxLength={HABIT_DESCRIPTION_MAX_LENGTH}
       />
+      <span className="block text-right text-xs text-slate-400">
+        {values.description.length}/{HABIT_DESCRIPTION_MAX_LENGTH}
+      </span>
     </label>
 
     <label className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">

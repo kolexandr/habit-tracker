@@ -23,7 +23,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
   };
 
   return (
-    <aside className="flex h-full w-[18rem] flex-col border-r border-slate-200/70 bg-[radial-gradient(circle_at_top,#1e293b_0%,#0f172a_55%,#020617_100%)] text-white shadow-2xl">
+    <aside className="flex h-full w-[18rem] min-h-0 flex-col border-r border-slate-200/70 bg-[radial-gradient(circle_at_top,#1e293b_0%,#0f172a_55%,#020617_100%)] text-white shadow-2xl">
       <div className="relative overflow-hidden border-b border-white/10 px-6 py-6">
         <div className="absolute -right-8 top-0 h-24 w-24 rounded-full bg-sky-400/20 blur-2xl" />
         <NavLink
@@ -41,7 +41,7 @@ const Sidebar = ({ onNavigate }: SidebarProps) => {
         </NavLink>
       </div>
 
-      <nav className="flex-1 px-4 py-5">
+      <nav className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
         <div className="mb-4 px-3 text-[11px] font-bold uppercase tracking-[0.24em] text-slate-400">
           Navigation
         </div>

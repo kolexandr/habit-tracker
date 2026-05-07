@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { apiFetch, readApiError } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 type Habit = {
   id: string;
@@ -10,6 +11,7 @@ type Habit = {
   scheduleType: 'DAILY' | 'WEEKLY' | 'CUSTOM';
   targetPerPeriod: number;
   user: {
+    id: string;
     username: string;
   };
 };
@@ -17,10 +19,13 @@ type Habit = {
 const categories = ['All', 'Health', 'Productivity', 'Mindfulness', 'Fitness', 'Learning', 'Other'] as const;
 
 const Library = () => {
+  const { user } = useAuth();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [muscleSearchTerm, setMuscleSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<(typeof categories)[number]>('All');
   const [isLoading, setIsLoading] = useState(true);
+  const [isFitnessImporting, setIsFitnessImporting] = useState(false);
   const [claimingHabitId, setClaimingHabitId] = useState<string | null>(null);
   const [claimedHabitIds, setClaimedHabitIds] = useState<string[]>([]);
   const [error, setError] = useState('');
@@ -86,10 +91,72 @@ const Library = () => {
     }
   };
 
+  const handleFitnessImport = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedMuscle = muscleSearchTerm.trim().toLowerCase();
+
+    if (!normalizedMuscle) {
+      setError('Enter a muscle type to import fitness habits.');
+      return;
+    }
+
+    setIsFitnessImporting(true);
+    setError('');
+
+    try {
+      const response = await apiFetch('/api/fitness/import', {
+        method: 'POST',
+        body: JSON.stringify({
+          muscle: normalizedMuscle,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Could not import fitness habits.'));
+      }
+
+      const data = (await response.json()) as { data: Habit[] };
+
+      setHabits((current) => {
+        const existingIds = new Set(current.map((habit) => habit.id));
+        const incomingHabits = data.data.filter((habit) => !existingIds.has(habit.id));
+        return [...incomingHabits, ...current];
+      });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Could not import fitness habits.',
+      );
+    } finally {
+      setIsFitnessImporting(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Habit Library</h1>
-      
+
+      {selectedCategory === 'Fitness' && (
+        <form onSubmit={handleFitnessImport} className="mb-4 flex flex-col gap-3 md:flex-row">
+          <input
+            type="text"
+            placeholder="Search by muscle type, like biceps or chest"
+            value={muscleSearchTerm}
+            onChange={(event) => setMuscleSearchTerm(event.target.value)}
+            className="w-full rounded-md border p-3 md:flex-1"
+          />
+          <button
+            type="submit"
+            disabled={isFitnessImporting}
+            className="rounded-md bg-slate-900 px-5 py-3 font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+          >
+            {isFitnessImporting ? 'Importing...' : 'Import exercises'}
+          </button>
+        </form>
+      )}
+
       <input 
         type="text" 
         placeholder="Search habits..." 
@@ -136,11 +203,13 @@ const Library = () => {
             </div>
             <button
               type="button"
-              disabled={claimingHabitId === habit.id || claimedHabitIds.includes(habit.id)}
+              disabled={claimingHabitId === habit.id || claimedHabitIds.includes(habit.id) || habit.user.id === user?.id}
               onClick={() => void handleClaim(habit.id)}
               className="mt-4 w-full rounded-lg border-2 border-gray-800 py-2 font-bold transition hover:bg-gray-800 hover:text-white disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
             >
-              {claimedHabitIds.includes(habit.id)
+              {habit.user.id === user?.id
+                ? 'Already yours'
+                : claimedHabitIds.includes(habit.id)
                 ? 'Claimed'
                 : claimingHabitId === habit.id
                   ? 'Claiming...'

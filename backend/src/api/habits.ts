@@ -68,6 +68,7 @@ router.get("/", async (req: Request, res: Response) => {
       include: {
         user: {
           select: {
+            id: true,
             username: true,
           },
         },
@@ -79,7 +80,7 @@ router.get("/", async (req: Request, res: Response) => {
     return res.status(500).json({
       message: error instanceof Error ? error.message : "Error retrieving habits.",
     })
-  } 
+  }
 });
 
 router.get("/mine", async (req: Request, res: Response) => {

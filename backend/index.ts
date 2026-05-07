@@ -6,6 +6,7 @@ import authRoute from "./src/api/auth.ts";
 import habitsRoute from "./src/api/habits.ts";
 import habitCompletionRoute from "./src/api/completion.ts";
 import geminiRoute from "./src/api/gemini.ts";
+import fitnessRoute from "./src/api/fitness.ts";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -37,6 +38,7 @@ async function main() {
   app.use("/api/auth/", authRoute);
   app.use("/api/habits/", requireAuth, habitsRoute);
   app.use("/api/habits/", requireAuth, habitCompletionRoute);
+  app.use("/api/fitness/", requireAuth, fitnessRoute);
   app.use("/api/gemini/", requireAuth, geminiRoute);
 
   app.get("/", (req, res) => {

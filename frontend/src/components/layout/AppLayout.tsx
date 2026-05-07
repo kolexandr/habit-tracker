@@ -7,12 +7,12 @@ const AppLayout = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <div className="hidden lg:block">
+    <div className="flex h-screen overflow-hidden bg-slate-50">
+      <div className="hidden h-full shrink-0 lg:block">
         <Sidebar />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/85 px-4 py-3 backdrop-blur lg:hidden">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
             <button
@@ -33,7 +33,7 @@ const AppLayout = () => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+        <main className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
           <div className="mx-auto max-w-6xl">
             <Outlet />
           </div>

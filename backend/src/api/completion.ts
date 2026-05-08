@@ -37,7 +37,7 @@ router.post("/:id/completions", async (req: Request, res: Response) => {
     const userId = req.user!.id;
 
     try {
-        const habit = await prisma.habit.findUnique({ where: { id: id, userId: userId} });
+        const habit = await prisma.userHabit.findFirst({ where: { id, userId } });
         
         if (!habit) {
             return res.status(404).json({ message: "The habit does not exist." });
@@ -47,7 +47,7 @@ router.post("/:id/completions", async (req: Request, res: Response) => {
 
         const alreadyDone = await prisma.habitCompletion.findFirst({
             where: {
-                habitId: id,
+                userHabitId: id,
                 completedAt: { gte: startOfPeriod }
             }
         });
@@ -59,11 +59,11 @@ router.post("/:id/completions", async (req: Request, res: Response) => {
         const { completion, updatedHabit, updatedUser } = await prisma.$transaction(async (tx) => {
             const completion = await tx.habitCompletion.create({
                 data: {
-                    habitId: id,    
+                    userHabitId: id,
                 }
             });
 
-            const updatedHabit = await tx.habit.update({
+            const updatedHabit = await tx.userHabit.update({
                 where: { id: habit.id },
                 data: {
                     currentStreak: {
@@ -107,7 +107,7 @@ router.delete("/:id/completions", async (req: Request, res: Response) => {
     const id = req.params.id as string;
     const userId = req.user!.id;
 
-    const habit = await prisma.habit.findUnique({ where: {id: id, userId: userId} });
+    const habit = await prisma.userHabit.findFirst({ where: { id, userId } });
         
     if (!habit) {
         return res.status(404).json({ message: "The habit does not exist." });
@@ -118,7 +118,7 @@ router.delete("/:id/completions", async (req: Request, res: Response) => {
 
         const completionToDelete = await prisma.habitCompletion.findFirst({
             where: {
-                habitId: id,
+                userHabitId: id,
                 completedAt: {
                     gte: startOfPeriod,
                     lte: endOfPeriod
@@ -136,7 +136,7 @@ router.delete("/:id/completions", async (req: Request, res: Response) => {
                 where: { id: completionToDelete.id }
             });
 
-            const updatedHabit = await tx.habit.update({
+            const updatedHabit = await tx.userHabit.update({
                 where: { id: habit.id },
                 data: {
                     currentStreak: Math.max(habit.currentStreak - 1, 0),

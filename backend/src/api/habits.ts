@@ -1,11 +1,34 @@
-import {Request, Response, NextFunction, Router} from "express";
-import {prisma} from "../../prisma.ts";
-import {z} from "zod";
-import { ScheduleType, HabitStatus, HabitType } from "../../generated/prisma/enums.ts";
+import { Request, Response, Router } from "express";
+import { prisma } from "../../prisma.ts";
+import { z } from "zod";
+import { HabitStatus, HabitType, ScheduleType } from "../../generated/prisma/enums.ts";
 
-const router = Router(); 
+const router = Router();
 const HABIT_NAME_MAX_LENGTH = 60;
 const HABIT_DESCRIPTION_MAX_LENGTH = 240;
+
+const habitSchema = z.object({
+  name: z.string().trim().min(3).max(HABIT_NAME_MAX_LENGTH),
+  description: z.string().trim().min(3).max(HABIT_DESCRIPTION_MAX_LENGTH).optional(),
+  scheduleType: z.enum(ScheduleType),
+  habitType: z.enum(HabitType),
+  habitStatus: z.enum(HabitStatus),
+  targetPerPeriod: z.number().int().positive().default(1),
+  endDate: z.coerce.date().optional(),
+  templateId: z.string().uuid().optional(),
+});
+
+const habitPatchSchema = z
+  .object({
+    name: z.string().trim().min(3).max(HABIT_NAME_MAX_LENGTH).optional(),
+    description: z.string().trim().min(3).max(HABIT_DESCRIPTION_MAX_LENGTH).nullable().optional(),
+    scheduleType: z.enum(ScheduleType).optional(),
+    habitType: z.enum(HabitType).optional(),
+    habitStatus: z.enum(HabitStatus).optional(),
+    targetPerPeriod: z.number().int().positive().optional(),
+    endDate: z.coerce.date().nullable().optional(),
+  })
+  .strict();
 
 const getTodayRange = () => {
   const startOfDay = new Date();
@@ -36,58 +59,11 @@ const getCurrentPeriodRange = (scheduleType: ScheduleType) => {
   return { startOfPeriod: startOfDay, endOfPeriod: endOfDay };
 };
 
-const habitSchema = z.object({
-  name: z.string().trim().min(3).max(HABIT_NAME_MAX_LENGTH),
-  description: z.string().trim().min(3).max(HABIT_DESCRIPTION_MAX_LENGTH).optional(),
-  scheduleType: z.enum(ScheduleType),
-  habitType: z.enum(HabitType),
-  habitStatus: z.enum(HabitStatus),
-  isPublic: z.boolean(),
-  targetPerPeriod: z.number().int().positive().default(1),
-  endDate: z.coerce.date().optional(),
-});
-
-const habitPatchSchema = z.object({
-  name: z.string().trim().min(3).max(HABIT_NAME_MAX_LENGTH).optional(),
-  description: z.string().trim().min(3).max(HABIT_DESCRIPTION_MAX_LENGTH).nullable().optional(),
-  scheduleType: z.enum(ScheduleType).optional(),
-  habitType: z.enum(HabitType).optional(),
-  habitStatus: z.enum(HabitStatus).optional(),
-  isPublic: z.boolean().optional(),
-  targetPerPeriod: z.number().int().positive().optional(),
-  endDate: z.coerce.date().nullable().optional(),
-}).strict();
-
-
-router.get("/", async (req: Request, res: Response) => {
-  try {
-    const habits = await prisma.habit.findMany({
-      where: {
-        isPublic: true,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
-      },
-    });
-    res.status(200).json({data: habits}); 
-  } catch (error) {
-    console.error("GET /api/habits failed:", error);
-    return res.status(500).json({
-      message: error instanceof Error ? error.message : "Error retrieving habits.",
-    })
-  }
-});
-
 router.get("/mine", async (req: Request, res: Response) => {
   const userId = req.user!.id;
 
   try {
-    const habits = await prisma.habit.findMany({
+    const habits = await prisma.userHabit.findMany({
       where: { userId },
       include: {
         habitCompletions: {
@@ -96,6 +72,9 @@ router.get("/mine", async (req: Request, res: Response) => {
             completedAt: true,
           },
         },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
@@ -122,103 +101,90 @@ router.get("/mine", async (req: Request, res: Response) => {
 router.get("/:id", async (req: Request, res: Response) => {
   const habitId = req.params.id as string;
   const userId = req.user!.id;
+
   try {
-    const habit = await prisma.habit.findUnique({where: {id: habitId, userId: userId}});
+    const habit = await prisma.userHabit.findFirst({
+      where: { id: habitId, userId },
+    });
 
     if (!habit) {
-      return res.status(404).json({message: "Habit is not found."});
+      return res.status(404).json({ message: "Habit is not found." });
     }
 
-    res.json({data: habit});
+    return res.json({ data: habit });
   } catch (error) {
-    res.status(500).json({message: "Error retrieving habit."});
+    return res.status(500).json({ message: "Error retrieving habit." });
   }
 });
 
 router.post("/", async (req: Request, res: Response) => {
   const result = habitSchema.safeParse(req.body);
-  if (!result.success){
+  if (!result.success) {
     return res.status(400).send("Invalid information.");
   }
 
   const userId = req.user!.id;
 
   try {
-    const habit = await prisma.habit.create({
+    if (result.data.templateId) {
+      const template = await prisma.habitTemplate.findFirst({
+        where: {
+          id: result.data.templateId,
+          isPublic: true,
+        },
+      });
+
+      if (!template) {
+        return res.status(404).json({ message: "Template was not found." });
+      }
+    }
+
+    const habit = await prisma.userHabit.create({
       data: {
-        ...result.data,
+        name: result.data.name,
+        ...(result.data.description ? { description: result.data.description } : {}),
+        scheduleType: result.data.scheduleType,
+        habitType: result.data.habitType,
+        habitStatus: result.data.habitStatus,
+        targetPerPeriod: result.data.targetPerPeriod,
+        ...(result.data.endDate ? { endDate: result.data.endDate } : {}),
+        ...(result.data.templateId ? { templateId: result.data.templateId } : {}),
         userId,
-        isPlatformCreated: false,
       },
     });
-    res.status(201).json({data: habit});
+
+    return res.status(201).json({ data: habit });
   } catch (error) {
-    res.status(500).json({message: "Error creating the habit."});
+    console.error("POST /api/habits failed:", error);
+    return res.status(500).json({ message: "Error creating the habit." });
   }
 });
 
-router.post("/:id/claim", async (req: Request, res: Response) => {
-  const sourceHabitId = req.params.id as string;
-  const userId = req.user!.id;
-
-  try {
-    const sourceHabit = await prisma.habit.findUnique({
-      where: { id: sourceHabitId },
-    });
-
-    if (!sourceHabit || !sourceHabit.isPublic) {
-      return res.status(404).json({ message: "Library habit was not found." });
-    }
-
-    const existingHabit = await prisma.habit.findFirst({
-      where: {
-        userId,
-        id: sourceHabit.id,
-      },
-    });
-
-    if (existingHabit) {
-      return res.status(409).json({ message: "You already claimed this habit." });
-    }
-
-    const claimedHabit = await prisma.habit.create({
-      data: {
-        name: sourceHabit.name,
-        description: sourceHabit.description,
-        scheduleType: sourceHabit.scheduleType,
-        habitType: sourceHabit.habitType,
-        habitStatus: HabitStatus.ACTIVE,
-        isPublic: false,
-        isPlatformCreated: sourceHabit.isPlatformCreated,
-        targetPerPeriod: sourceHabit.targetPerPeriod,
-        endDate: sourceHabit.endDate,
-        currentStreak: 0,
-        userId,
-      },
-    });
-
-    return res.status(201).json({
-      data: claimedHabit,
-      message: "Habit claimed successfully.",
-    });
-  } catch (error) {
-    console.error("POST /api/habits/:id/claim failed:", error);
-    return res.status(500).json({
-      message: error instanceof Error ? error.message : "Error claiming habit.",
-    });
-  }
-});
-
-router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   const habitId = req.params.id as string;
   const userId = req.user!.id;
 
   try {
-    await prisma.habit.delete({where: {id: habitId, userId: userId}});
+    const habit = await prisma.userHabit.findFirst({
+      where: {
+        id: habitId,
+        userId,
+      },
+    });
 
-    res.status(204).json({message: "The habit was deleted successfully!"});
+    if (!habit) {
+      return res.status(404).json({ message: "No habit was found." });
+    }
+
+    await prisma.userHabit.delete({
+      where: {
+        id: habit.id,
+      },
+    });
+
+    return res.status(204).json({ message: "The habit was deleted successfully!" });
   } catch (error) {
-    res.status(404).json({ message: "No habit was found."});
+    return res.status(404).json({ message: "No habit was found." });
   }
 });
 
@@ -227,19 +193,37 @@ router.patch("/:id", async (req: Request, res: Response) => {
   const userId = req.user!.id;
 
   const result = habitPatchSchema.safeParse(req.body);
-  if (!result.success){
-    return res.status(400).json({message: "Invalid information."});
+  if (!result.success) {
+    return res.status(400).json({ message: "Invalid information." });
   }
 
   try {
-    const updatedHabit = await prisma.habit.update({
-      where: {id: habitId, userId: userId},
-      data: {...result.data}
+    const existingHabit = await prisma.userHabit.findFirst({
+      where: {
+        id: habitId,
+        userId,
+      },
     });
 
-    res.status(200).json({data: updatedHabit, message: "Habit was updated successfully!"});
+    if (!existingHabit) {
+      return res.status(404).json({ message: "Habit is not found." });
+    }
+
+    const updatedHabit = await prisma.userHabit.update({
+      where: {
+        id: existingHabit.id,
+      },
+      data: {
+        ...result.data,
+      },
+    });
+
+    return res.status(200).json({
+      data: updatedHabit,
+      message: "Habit was updated successfully!",
+    });
   } catch (error) {
-    res.status(500).json({message: "Error updating habit."})
+    return res.status(500).json({ message: "Error updating habit." });
   }
 });
 

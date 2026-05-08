@@ -10,7 +10,6 @@ type Habit = {
   scheduleType: 'DAILY' | 'WEEKLY' | 'CUSTOM';
   habitType: 'HEALTH' | 'PRODUCTIVITY' | 'MINDFULNESS' | 'FITNESS' | 'LEARNING' | 'OTHER';
   habitStatus: 'ACTIVE' | 'ARCHIVE';
-  isPublic: boolean;
   targetPerPeriod: number;
   currentStreak: number;
   endDate: string | null;
@@ -92,7 +91,6 @@ const buildCreatePayload = (values: HabitFormValues) => ({
   scheduleType: values.scheduleType,
   habitType: values.habitType,
   habitStatus: values.habitStatus,
-  isPublic: values.isPublic,
   targetPerPeriod: Number(values.targetPerPeriod),
   ...(values.endDate ? { endDate: values.endDate } : {}),
 });
@@ -103,7 +101,6 @@ const buildPatchPayload = (values: HabitFormValues) => ({
   scheduleType: values.scheduleType,
   habitType: values.habitType,
   habitStatus: values.habitStatus,
-  isPublic: values.isPublic,
   targetPerPeriod: Number(values.targetPerPeriod),
   endDate: values.endDate || null,
 });
@@ -114,7 +111,7 @@ const mapHabitToForm = (habit: Habit): HabitFormValues => ({
   scheduleType: habit.scheduleType,
   habitType: habit.habitType,
   habitStatus: habit.habitStatus,
-  isPublic: habit.isPublic,
+  isPublic: false,
   targetPerPeriod: habit.targetPerPeriod,
   endDate: habit.endDate ? habit.endDate.slice(0, 10) : '',
 });
@@ -127,6 +124,7 @@ const HabitFormFields = ({
   isSubmitting,
   error,
   secondaryAction,
+  showVisibilityOption = false,
 }: {
   values: HabitFormValues;
   onChange: <K extends keyof HabitFormValues>(field: K, value: HabitFormValues[K]) => void;
@@ -135,6 +133,7 @@ const HabitFormFields = ({
   isSubmitting: boolean;
   error: string;
   secondaryAction?: React.ReactNode;
+  showVisibilityOption?: boolean;
 }) => (
   <form onSubmit={onSubmit} className="space-y-5">
     <div className="grid gap-5 sm:grid-cols-2">
@@ -236,14 +235,16 @@ const HabitFormFields = ({
       </span>
     </label>
 
-    <label className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-      <input
-        type="checkbox"
-        checked={values.isPublic}
-        onChange={(event) => onChange('isPublic', event.target.checked)}
-      />
-      Make this habit visible in the public library
-    </label>
+    {showVisibilityOption && (
+      <label className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          checked={values.isPublic}
+          onChange={(event) => onChange('isPublic', event.target.checked)}
+        />
+        Make this habit visible in the public library
+      </label>
+    )}
 
     {error && <p className="text-sm text-red-600">{error}</p>}
 
@@ -496,14 +497,34 @@ const Dashboard = () => {
       }
 
       const responseData = (await response.json()) as { data: Omit<Habit, 'habitCompletions'> };
+      const createdHabit: Habit = {
+        ...responseData.data,
+        habitCompletions: [],
+      };
 
-      setHabits((currentHabits) => [
-        ...currentHabits,
-        {
-          ...responseData.data,
-          habitCompletions: [],
-        },
-      ]);
+      if (createValues.isPublic) {
+        const publishResponse = await apiFetch('/api/templates/', {
+          method: 'POST',
+          body: JSON.stringify({
+            sourceUserHabitId: responseData.data.id,
+          }),
+        });
+
+        if (!publishResponse.ok) {
+          setHabits((currentHabits) => [...currentHabits, createdHabit]);
+          closeModals();
+          await refreshAuth();
+          setError(
+            await readApiError(
+              publishResponse,
+              'Habit was created, but publishing it to the library failed.',
+            ),
+          );
+          return;
+        }
+      }
+
+      setHabits((currentHabits) => [...currentHabits, createdHabit]);
 
       closeModals();
       await refreshAuth();
@@ -656,7 +677,6 @@ const Dashboard = () => {
           scheduleType: generatedHabit.scheduleType,
           habitType: generatedHabit.habitType,
           habitStatus: 'ACTIVE',
-          isPublic: false,
           targetPerPeriod: Number(generatedHabit.targetPerPeriod),
           ...(generatedHabit.endDate ? { endDate: generatedHabit.endDate } : {}),
         }),
@@ -885,6 +905,7 @@ const Dashboard = () => {
               submitLabel="Create Habit"
               isSubmitting={isSubmittingForm}
               error={modalError}
+              showVisibilityOption
               secondaryAction={
                 <button
                   type="button"

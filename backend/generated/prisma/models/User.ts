@@ -224,7 +224,8 @@ export type UserWhereInput = {
   hashPassword?: Prisma.StringFilter<"User"> | string
   productivityScore?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  habits?: Prisma.HabitListRelationFilter
+  habits?: Prisma.UserHabitListRelationFilter
+  createdTemplates?: Prisma.HabitTemplateListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -234,7 +235,8 @@ export type UserOrderByWithRelationInput = {
   hashPassword?: Prisma.SortOrder
   productivityScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  habits?: Prisma.HabitOrderByRelationAggregateInput
+  habits?: Prisma.UserHabitOrderByRelationAggregateInput
+  createdTemplates?: Prisma.HabitTemplateOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -247,7 +249,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   hashPassword?: Prisma.StringFilter<"User"> | string
   productivityScore?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  habits?: Prisma.HabitListRelationFilter
+  habits?: Prisma.UserHabitListRelationFilter
+  createdTemplates?: Prisma.HabitTemplateListRelationFilter
 }, "id" | "username" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -283,7 +286,8 @@ export type UserCreateInput = {
   hashPassword: string
   productivityScore?: number
   createdAt?: Date | string
-  habits?: Prisma.HabitCreateNestedManyWithoutUserInput
+  habits?: Prisma.UserHabitCreateNestedManyWithoutUserInput
+  createdTemplates?: Prisma.HabitTemplateCreateNestedManyWithoutCreatedByUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -293,7 +297,8 @@ export type UserUncheckedCreateInput = {
   hashPassword: string
   productivityScore?: number
   createdAt?: Date | string
-  habits?: Prisma.HabitUncheckedCreateNestedManyWithoutUserInput
+  habits?: Prisma.UserHabitUncheckedCreateNestedManyWithoutUserInput
+  createdTemplates?: Prisma.HabitTemplateUncheckedCreateNestedManyWithoutCreatedByUserInput
 }
 
 export type UserUpdateInput = {
@@ -303,7 +308,8 @@ export type UserUpdateInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   productivityScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  habits?: Prisma.HabitUpdateManyWithoutUserNestedInput
+  habits?: Prisma.UserHabitUpdateManyWithoutUserNestedInput
+  createdTemplates?: Prisma.HabitTemplateUpdateManyWithoutCreatedByUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -313,7 +319,8 @@ export type UserUncheckedUpdateInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   productivityScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  habits?: Prisma.HabitUncheckedUpdateManyWithoutUserNestedInput
+  habits?: Prisma.UserHabitUncheckedUpdateManyWithoutUserNestedInput
+  createdTemplates?: Prisma.HabitTemplateUncheckedUpdateManyWithoutCreatedByUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -378,6 +385,11 @@ export type UserSumOrderByAggregateInput = {
   productivityScore?: Prisma.SortOrder
 }
 
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
@@ -399,6 +411,22 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type UserCreateNestedOneWithoutCreatedTemplatesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedTemplatesInput, Prisma.UserUncheckedCreateWithoutCreatedTemplatesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedTemplatesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCreatedTemplatesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedTemplatesInput, Prisma.UserUncheckedCreateWithoutCreatedTemplatesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedTemplatesInput
+  upsert?: Prisma.UserUpsertWithoutCreatedTemplatesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedTemplatesInput, Prisma.UserUpdateWithoutCreatedTemplatesInput>, Prisma.UserUncheckedUpdateWithoutCreatedTemplatesInput>
+}
+
 export type UserCreateNestedOneWithoutHabitsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutHabitsInput, Prisma.UserUncheckedCreateWithoutHabitsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutHabitsInput
@@ -413,6 +441,62 @@ export type UserUpdateOneRequiredWithoutHabitsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHabitsInput, Prisma.UserUpdateWithoutHabitsInput>, Prisma.UserUncheckedUpdateWithoutHabitsInput>
 }
 
+export type UserCreateWithoutCreatedTemplatesInput = {
+  id?: string
+  username: string
+  email: string
+  hashPassword: string
+  productivityScore?: number
+  createdAt?: Date | string
+  habits?: Prisma.UserHabitCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCreatedTemplatesInput = {
+  id?: string
+  username: string
+  email: string
+  hashPassword: string
+  productivityScore?: number
+  createdAt?: Date | string
+  habits?: Prisma.UserHabitUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCreatedTemplatesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedTemplatesInput, Prisma.UserUncheckedCreateWithoutCreatedTemplatesInput>
+}
+
+export type UserUpsertWithoutCreatedTemplatesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedTemplatesInput, Prisma.UserUncheckedUpdateWithoutCreatedTemplatesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedTemplatesInput, Prisma.UserUncheckedCreateWithoutCreatedTemplatesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedTemplatesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedTemplatesInput, Prisma.UserUncheckedUpdateWithoutCreatedTemplatesInput>
+}
+
+export type UserUpdateWithoutCreatedTemplatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
+  productivityScore?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  habits?: Prisma.UserHabitUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedTemplatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
+  productivityScore?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  habits?: Prisma.UserHabitUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutHabitsInput = {
   id?: string
   username: string
@@ -420,6 +504,7 @@ export type UserCreateWithoutHabitsInput = {
   hashPassword: string
   productivityScore?: number
   createdAt?: Date | string
+  createdTemplates?: Prisma.HabitTemplateCreateNestedManyWithoutCreatedByUserInput
 }
 
 export type UserUncheckedCreateWithoutHabitsInput = {
@@ -429,6 +514,7 @@ export type UserUncheckedCreateWithoutHabitsInput = {
   hashPassword: string
   productivityScore?: number
   createdAt?: Date | string
+  createdTemplates?: Prisma.HabitTemplateUncheckedCreateNestedManyWithoutCreatedByUserInput
 }
 
 export type UserCreateOrConnectWithoutHabitsInput = {
@@ -454,6 +540,7 @@ export type UserUpdateWithoutHabitsInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   productivityScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdTemplates?: Prisma.HabitTemplateUpdateManyWithoutCreatedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHabitsInput = {
@@ -463,6 +550,7 @@ export type UserUncheckedUpdateWithoutHabitsInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   productivityScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdTemplates?: Prisma.HabitTemplateUncheckedUpdateManyWithoutCreatedByUserNestedInput
 }
 
 
@@ -472,10 +560,12 @@ export type UserUncheckedUpdateWithoutHabitsInput = {
 
 export type UserCountOutputType = {
   habits: number
+  createdTemplates: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   habits?: boolean | UserCountOutputTypeCountHabitsArgs
+  createdTemplates?: boolean | UserCountOutputTypeCountCreatedTemplatesArgs
 }
 
 /**
@@ -492,7 +582,14 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
  * UserCountOutputType without action
  */
 export type UserCountOutputTypeCountHabitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.HabitWhereInput
+  where?: Prisma.UserHabitWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedTemplatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HabitTemplateWhereInput
 }
 
 
@@ -504,6 +601,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   productivityScore?: boolean
   createdAt?: boolean
   habits?: boolean | Prisma.User$habitsArgs<ExtArgs>
+  createdTemplates?: boolean | Prisma.User$createdTemplatesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -537,6 +635,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "hashPassword" | "productivityScore" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   habits?: boolean | Prisma.User$habitsArgs<ExtArgs>
+  createdTemplates?: boolean | Prisma.User$createdTemplatesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -545,7 +644,8 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
-    habits: Prisma.$HabitPayload<ExtArgs>[]
+    habits: Prisma.$UserHabitPayload<ExtArgs>[]
+    createdTemplates: Prisma.$HabitTemplatePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -948,7 +1048,8 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  habits<T extends Prisma.User$habitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$habitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  habits<T extends Prisma.User$habitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$habitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserHabitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdTemplates<T extends Prisma.User$createdTemplatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HabitTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1381,23 +1482,47 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
  */
 export type User$habitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Habit
+   * Select specific fields to fetch from the UserHabit
    */
-  select?: Prisma.HabitSelect<ExtArgs> | null
+  select?: Prisma.UserHabitSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Habit
+   * Omit specific fields from the UserHabit
    */
-  omit?: Prisma.HabitOmit<ExtArgs> | null
+  omit?: Prisma.UserHabitOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.HabitInclude<ExtArgs> | null
-  where?: Prisma.HabitWhereInput
-  orderBy?: Prisma.HabitOrderByWithRelationInput | Prisma.HabitOrderByWithRelationInput[]
-  cursor?: Prisma.HabitWhereUniqueInput
+  include?: Prisma.UserHabitInclude<ExtArgs> | null
+  where?: Prisma.UserHabitWhereInput
+  orderBy?: Prisma.UserHabitOrderByWithRelationInput | Prisma.UserHabitOrderByWithRelationInput[]
+  cursor?: Prisma.UserHabitWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.HabitScalarFieldEnum | Prisma.HabitScalarFieldEnum[]
+  distinct?: Prisma.UserHabitScalarFieldEnum | Prisma.UserHabitScalarFieldEnum[]
+}
+
+/**
+ * User.createdTemplates
+ */
+export type User$createdTemplatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HabitTemplate
+   */
+  select?: Prisma.HabitTemplateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HabitTemplate
+   */
+  omit?: Prisma.HabitTemplateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HabitTemplateInclude<ExtArgs> | null
+  where?: Prisma.HabitTemplateWhereInput
+  orderBy?: Prisma.HabitTemplateOrderByWithRelationInput | Prisma.HabitTemplateOrderByWithRelationInput[]
+  cursor?: Prisma.HabitTemplateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HabitTemplateScalarFieldEnum | Prisma.HabitTemplateScalarFieldEnum[]
 }
 
 /**

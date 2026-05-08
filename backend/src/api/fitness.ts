@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { z } from "zod";
 import { prisma } from "../../prisma.ts";
-import { HabitStatus, HabitType, ScheduleType } from "../../generated/prisma/enums.ts";
+import { HabitType, ScheduleType, TemplateSource } from "../../generated/prisma/enums.ts";
 
 const router = Router();
 
@@ -16,17 +16,14 @@ type NinjaExercise = {
 
 const NINJA_API_URL = "https://api.api-ninjas.com/v1/exercises";
 
-const buildImportedFitnessHabitData = (exercise: NinjaExercise, userId: string) => ({
+const buildImportedFitnessTemplateData = (exercise: NinjaExercise) => ({
   name: exercise.name,
   description: exercise.instructions,
   scheduleType: ScheduleType.DAILY,
   habitType: HabitType.FITNESS,
-  habitStatus: HabitStatus.ACTIVE,
-  isPlatformCreated: false,
-  isPublic: true,
   targetPerPeriod: 1,
-  currentStreak: 0,
-  userId,
+  source: TemplateSource.PLATFORM,
+  isPublic: true,
 });
 
 router.post("/import", async (req: Request, res: Response) => {
@@ -36,7 +33,6 @@ router.post("/import", async (req: Request, res: Response) => {
     return res.status(400).json({ message: "A valid muscle type is required." });
   }
 
-  const userId = req.user!.id;
   const apiKey = process.env.NINJA_API_KEY;
 
   if (!apiKey) {
@@ -69,17 +65,17 @@ router.post("/import", async (req: Request, res: Response) => {
       });
     }
 
-    const savedHabits = await Promise.all(
+    const savedTemplates = await Promise.all(
       exercises.map(async (exercise) => {
-        const existingHabit = await prisma.habit.findFirst({
+        const existingTemplate = await prisma.habitTemplate.findFirst({
           where: {
-            userId,
             habitType: HabitType.FITNESS,
             name: exercise.name,
             description: exercise.instructions,
+            source: TemplateSource.PLATFORM,
           },
           include: {
-            user: {
+            createdByUser: {
               select: {
                 id: true,
                 username: true,
@@ -88,14 +84,14 @@ router.post("/import", async (req: Request, res: Response) => {
           },
         });
 
-        if (existingHabit) {
-          return existingHabit;
+        if (existingTemplate) {
+          return existingTemplate;
         }
 
-        return prisma.habit.create({
-          data: buildImportedFitnessHabitData(exercise, userId),
+        return prisma.habitTemplate.create({
+          data: buildImportedFitnessTemplateData(exercise),
           include: {
-            user: {
+            createdByUser: {
               select: {
                 id: true,
                 username: true,
@@ -107,8 +103,8 @@ router.post("/import", async (req: Request, res: Response) => {
     );
 
     return res.status(201).json({
-      data: savedHabits,
-      message: `Imported ${savedHabits.length} fitness habit${savedHabits.length === 1 ? "" : "s"}.`,
+      data: savedTemplates,
+      message: `Imported ${savedTemplates.length} fitness template${savedTemplates.length === 1 ? "" : "s"}.`,
     });
   } catch (error) {
     console.error("POST /api/fitness/import failed:", error);

@@ -26,19 +26,19 @@ export type AggregateHabitCompletion = {
 
 export type HabitCompletionMinAggregateOutputType = {
   id: string | null
-  habitId: string | null
+  userHabitId: string | null
   completedAt: Date | null
 }
 
 export type HabitCompletionMaxAggregateOutputType = {
   id: string | null
-  habitId: string | null
+  userHabitId: string | null
   completedAt: Date | null
 }
 
 export type HabitCompletionCountAggregateOutputType = {
   id: number
-  habitId: number
+  userHabitId: number
   completedAt: number
   _all: number
 }
@@ -46,19 +46,19 @@ export type HabitCompletionCountAggregateOutputType = {
 
 export type HabitCompletionMinAggregateInputType = {
   id?: true
-  habitId?: true
+  userHabitId?: true
   completedAt?: true
 }
 
 export type HabitCompletionMaxAggregateInputType = {
   id?: true
-  habitId?: true
+  userHabitId?: true
   completedAt?: true
 }
 
 export type HabitCompletionCountAggregateInputType = {
   id?: true
-  habitId?: true
+  userHabitId?: true
   completedAt?: true
   _all?: true
 }
@@ -137,7 +137,7 @@ export type HabitCompletionGroupByArgs<ExtArgs extends runtime.Types.Extensions.
 
 export type HabitCompletionGroupByOutputType = {
   id: string
-  habitId: string
+  userHabitId: string
   completedAt: Date
   _count: HabitCompletionCountAggregateOutputType | null
   _min: HabitCompletionMinAggregateOutputType | null
@@ -164,16 +164,16 @@ export type HabitCompletionWhereInput = {
   OR?: Prisma.HabitCompletionWhereInput[]
   NOT?: Prisma.HabitCompletionWhereInput | Prisma.HabitCompletionWhereInput[]
   id?: Prisma.StringFilter<"HabitCompletion"> | string
-  habitId?: Prisma.StringFilter<"HabitCompletion"> | string
+  userHabitId?: Prisma.StringFilter<"HabitCompletion"> | string
   completedAt?: Prisma.DateTimeFilter<"HabitCompletion"> | Date | string
-  habit?: Prisma.XOR<Prisma.HabitScalarRelationFilter, Prisma.HabitWhereInput>
+  userHabit?: Prisma.XOR<Prisma.UserHabitScalarRelationFilter, Prisma.UserHabitWhereInput>
 }
 
 export type HabitCompletionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  habitId?: Prisma.SortOrder
+  userHabitId?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
-  habit?: Prisma.HabitOrderByWithRelationInput
+  userHabit?: Prisma.UserHabitOrderByWithRelationInput
 }
 
 export type HabitCompletionWhereUniqueInput = Prisma.AtLeast<{
@@ -181,14 +181,14 @@ export type HabitCompletionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.HabitCompletionWhereInput | Prisma.HabitCompletionWhereInput[]
   OR?: Prisma.HabitCompletionWhereInput[]
   NOT?: Prisma.HabitCompletionWhereInput | Prisma.HabitCompletionWhereInput[]
-  habitId?: Prisma.StringFilter<"HabitCompletion"> | string
+  userHabitId?: Prisma.StringFilter<"HabitCompletion"> | string
   completedAt?: Prisma.DateTimeFilter<"HabitCompletion"> | Date | string
-  habit?: Prisma.XOR<Prisma.HabitScalarRelationFilter, Prisma.HabitWhereInput>
+  userHabit?: Prisma.XOR<Prisma.UserHabitScalarRelationFilter, Prisma.UserHabitWhereInput>
 }, "id">
 
 export type HabitCompletionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  habitId?: Prisma.SortOrder
+  userHabitId?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   _count?: Prisma.HabitCompletionCountOrderByAggregateInput
   _max?: Prisma.HabitCompletionMaxOrderByAggregateInput
@@ -200,37 +200,37 @@ export type HabitCompletionScalarWhereWithAggregatesInput = {
   OR?: Prisma.HabitCompletionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.HabitCompletionScalarWhereWithAggregatesInput | Prisma.HabitCompletionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"HabitCompletion"> | string
-  habitId?: Prisma.StringWithAggregatesFilter<"HabitCompletion"> | string
+  userHabitId?: Prisma.StringWithAggregatesFilter<"HabitCompletion"> | string
   completedAt?: Prisma.DateTimeWithAggregatesFilter<"HabitCompletion"> | Date | string
 }
 
 export type HabitCompletionCreateInput = {
   id?: string
   completedAt?: Date | string
-  habit: Prisma.HabitCreateNestedOneWithoutHabitCompletionsInput
+  userHabit: Prisma.UserHabitCreateNestedOneWithoutHabitCompletionsInput
 }
 
 export type HabitCompletionUncheckedCreateInput = {
   id?: string
-  habitId: string
+  userHabitId: string
   completedAt?: Date | string
 }
 
 export type HabitCompletionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  habit?: Prisma.HabitUpdateOneRequiredWithoutHabitCompletionsNestedInput
+  userHabit?: Prisma.UserHabitUpdateOneRequiredWithoutHabitCompletionsNestedInput
 }
 
 export type HabitCompletionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  habitId?: Prisma.StringFieldUpdateOperationsInput | string
+  userHabitId?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type HabitCompletionCreateManyInput = {
   id?: string
-  habitId: string
+  userHabitId: string
   completedAt?: Date | string
 }
 
@@ -241,7 +241,7 @@ export type HabitCompletionUpdateManyMutationInput = {
 
 export type HabitCompletionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  habitId?: Prisma.StringFieldUpdateOperationsInput | string
+  userHabitId?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -257,98 +257,98 @@ export type HabitCompletionOrderByRelationAggregateInput = {
 
 export type HabitCompletionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  habitId?: Prisma.SortOrder
+  userHabitId?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
 }
 
 export type HabitCompletionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  habitId?: Prisma.SortOrder
+  userHabitId?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
 }
 
 export type HabitCompletionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  habitId?: Prisma.SortOrder
+  userHabitId?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
 }
 
-export type HabitCompletionCreateNestedManyWithoutHabitInput = {
-  create?: Prisma.XOR<Prisma.HabitCompletionCreateWithoutHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutHabitInput> | Prisma.HabitCompletionCreateWithoutHabitInput[] | Prisma.HabitCompletionUncheckedCreateWithoutHabitInput[]
-  connectOrCreate?: Prisma.HabitCompletionCreateOrConnectWithoutHabitInput | Prisma.HabitCompletionCreateOrConnectWithoutHabitInput[]
-  createMany?: Prisma.HabitCompletionCreateManyHabitInputEnvelope
+export type HabitCompletionCreateNestedManyWithoutUserHabitInput = {
+  create?: Prisma.XOR<Prisma.HabitCompletionCreateWithoutUserHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput> | Prisma.HabitCompletionCreateWithoutUserHabitInput[] | Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput[]
+  connectOrCreate?: Prisma.HabitCompletionCreateOrConnectWithoutUserHabitInput | Prisma.HabitCompletionCreateOrConnectWithoutUserHabitInput[]
+  createMany?: Prisma.HabitCompletionCreateManyUserHabitInputEnvelope
   connect?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
 }
 
-export type HabitCompletionUncheckedCreateNestedManyWithoutHabitInput = {
-  create?: Prisma.XOR<Prisma.HabitCompletionCreateWithoutHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutHabitInput> | Prisma.HabitCompletionCreateWithoutHabitInput[] | Prisma.HabitCompletionUncheckedCreateWithoutHabitInput[]
-  connectOrCreate?: Prisma.HabitCompletionCreateOrConnectWithoutHabitInput | Prisma.HabitCompletionCreateOrConnectWithoutHabitInput[]
-  createMany?: Prisma.HabitCompletionCreateManyHabitInputEnvelope
+export type HabitCompletionUncheckedCreateNestedManyWithoutUserHabitInput = {
+  create?: Prisma.XOR<Prisma.HabitCompletionCreateWithoutUserHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput> | Prisma.HabitCompletionCreateWithoutUserHabitInput[] | Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput[]
+  connectOrCreate?: Prisma.HabitCompletionCreateOrConnectWithoutUserHabitInput | Prisma.HabitCompletionCreateOrConnectWithoutUserHabitInput[]
+  createMany?: Prisma.HabitCompletionCreateManyUserHabitInputEnvelope
   connect?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
 }
 
-export type HabitCompletionUpdateManyWithoutHabitNestedInput = {
-  create?: Prisma.XOR<Prisma.HabitCompletionCreateWithoutHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutHabitInput> | Prisma.HabitCompletionCreateWithoutHabitInput[] | Prisma.HabitCompletionUncheckedCreateWithoutHabitInput[]
-  connectOrCreate?: Prisma.HabitCompletionCreateOrConnectWithoutHabitInput | Prisma.HabitCompletionCreateOrConnectWithoutHabitInput[]
-  upsert?: Prisma.HabitCompletionUpsertWithWhereUniqueWithoutHabitInput | Prisma.HabitCompletionUpsertWithWhereUniqueWithoutHabitInput[]
-  createMany?: Prisma.HabitCompletionCreateManyHabitInputEnvelope
+export type HabitCompletionUpdateManyWithoutUserHabitNestedInput = {
+  create?: Prisma.XOR<Prisma.HabitCompletionCreateWithoutUserHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput> | Prisma.HabitCompletionCreateWithoutUserHabitInput[] | Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput[]
+  connectOrCreate?: Prisma.HabitCompletionCreateOrConnectWithoutUserHabitInput | Prisma.HabitCompletionCreateOrConnectWithoutUserHabitInput[]
+  upsert?: Prisma.HabitCompletionUpsertWithWhereUniqueWithoutUserHabitInput | Prisma.HabitCompletionUpsertWithWhereUniqueWithoutUserHabitInput[]
+  createMany?: Prisma.HabitCompletionCreateManyUserHabitInputEnvelope
   set?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
   disconnect?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
   delete?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
   connect?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
-  update?: Prisma.HabitCompletionUpdateWithWhereUniqueWithoutHabitInput | Prisma.HabitCompletionUpdateWithWhereUniqueWithoutHabitInput[]
-  updateMany?: Prisma.HabitCompletionUpdateManyWithWhereWithoutHabitInput | Prisma.HabitCompletionUpdateManyWithWhereWithoutHabitInput[]
+  update?: Prisma.HabitCompletionUpdateWithWhereUniqueWithoutUserHabitInput | Prisma.HabitCompletionUpdateWithWhereUniqueWithoutUserHabitInput[]
+  updateMany?: Prisma.HabitCompletionUpdateManyWithWhereWithoutUserHabitInput | Prisma.HabitCompletionUpdateManyWithWhereWithoutUserHabitInput[]
   deleteMany?: Prisma.HabitCompletionScalarWhereInput | Prisma.HabitCompletionScalarWhereInput[]
 }
 
-export type HabitCompletionUncheckedUpdateManyWithoutHabitNestedInput = {
-  create?: Prisma.XOR<Prisma.HabitCompletionCreateWithoutHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutHabitInput> | Prisma.HabitCompletionCreateWithoutHabitInput[] | Prisma.HabitCompletionUncheckedCreateWithoutHabitInput[]
-  connectOrCreate?: Prisma.HabitCompletionCreateOrConnectWithoutHabitInput | Prisma.HabitCompletionCreateOrConnectWithoutHabitInput[]
-  upsert?: Prisma.HabitCompletionUpsertWithWhereUniqueWithoutHabitInput | Prisma.HabitCompletionUpsertWithWhereUniqueWithoutHabitInput[]
-  createMany?: Prisma.HabitCompletionCreateManyHabitInputEnvelope
+export type HabitCompletionUncheckedUpdateManyWithoutUserHabitNestedInput = {
+  create?: Prisma.XOR<Prisma.HabitCompletionCreateWithoutUserHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput> | Prisma.HabitCompletionCreateWithoutUserHabitInput[] | Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput[]
+  connectOrCreate?: Prisma.HabitCompletionCreateOrConnectWithoutUserHabitInput | Prisma.HabitCompletionCreateOrConnectWithoutUserHabitInput[]
+  upsert?: Prisma.HabitCompletionUpsertWithWhereUniqueWithoutUserHabitInput | Prisma.HabitCompletionUpsertWithWhereUniqueWithoutUserHabitInput[]
+  createMany?: Prisma.HabitCompletionCreateManyUserHabitInputEnvelope
   set?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
   disconnect?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
   delete?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
   connect?: Prisma.HabitCompletionWhereUniqueInput | Prisma.HabitCompletionWhereUniqueInput[]
-  update?: Prisma.HabitCompletionUpdateWithWhereUniqueWithoutHabitInput | Prisma.HabitCompletionUpdateWithWhereUniqueWithoutHabitInput[]
-  updateMany?: Prisma.HabitCompletionUpdateManyWithWhereWithoutHabitInput | Prisma.HabitCompletionUpdateManyWithWhereWithoutHabitInput[]
+  update?: Prisma.HabitCompletionUpdateWithWhereUniqueWithoutUserHabitInput | Prisma.HabitCompletionUpdateWithWhereUniqueWithoutUserHabitInput[]
+  updateMany?: Prisma.HabitCompletionUpdateManyWithWhereWithoutUserHabitInput | Prisma.HabitCompletionUpdateManyWithWhereWithoutUserHabitInput[]
   deleteMany?: Prisma.HabitCompletionScalarWhereInput | Prisma.HabitCompletionScalarWhereInput[]
 }
 
-export type HabitCompletionCreateWithoutHabitInput = {
+export type HabitCompletionCreateWithoutUserHabitInput = {
   id?: string
   completedAt?: Date | string
 }
 
-export type HabitCompletionUncheckedCreateWithoutHabitInput = {
+export type HabitCompletionUncheckedCreateWithoutUserHabitInput = {
   id?: string
   completedAt?: Date | string
 }
 
-export type HabitCompletionCreateOrConnectWithoutHabitInput = {
+export type HabitCompletionCreateOrConnectWithoutUserHabitInput = {
   where: Prisma.HabitCompletionWhereUniqueInput
-  create: Prisma.XOR<Prisma.HabitCompletionCreateWithoutHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutHabitInput>
+  create: Prisma.XOR<Prisma.HabitCompletionCreateWithoutUserHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput>
 }
 
-export type HabitCompletionCreateManyHabitInputEnvelope = {
-  data: Prisma.HabitCompletionCreateManyHabitInput | Prisma.HabitCompletionCreateManyHabitInput[]
+export type HabitCompletionCreateManyUserHabitInputEnvelope = {
+  data: Prisma.HabitCompletionCreateManyUserHabitInput | Prisma.HabitCompletionCreateManyUserHabitInput[]
   skipDuplicates?: boolean
 }
 
-export type HabitCompletionUpsertWithWhereUniqueWithoutHabitInput = {
+export type HabitCompletionUpsertWithWhereUniqueWithoutUserHabitInput = {
   where: Prisma.HabitCompletionWhereUniqueInput
-  update: Prisma.XOR<Prisma.HabitCompletionUpdateWithoutHabitInput, Prisma.HabitCompletionUncheckedUpdateWithoutHabitInput>
-  create: Prisma.XOR<Prisma.HabitCompletionCreateWithoutHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutHabitInput>
+  update: Prisma.XOR<Prisma.HabitCompletionUpdateWithoutUserHabitInput, Prisma.HabitCompletionUncheckedUpdateWithoutUserHabitInput>
+  create: Prisma.XOR<Prisma.HabitCompletionCreateWithoutUserHabitInput, Prisma.HabitCompletionUncheckedCreateWithoutUserHabitInput>
 }
 
-export type HabitCompletionUpdateWithWhereUniqueWithoutHabitInput = {
+export type HabitCompletionUpdateWithWhereUniqueWithoutUserHabitInput = {
   where: Prisma.HabitCompletionWhereUniqueInput
-  data: Prisma.XOR<Prisma.HabitCompletionUpdateWithoutHabitInput, Prisma.HabitCompletionUncheckedUpdateWithoutHabitInput>
+  data: Prisma.XOR<Prisma.HabitCompletionUpdateWithoutUserHabitInput, Prisma.HabitCompletionUncheckedUpdateWithoutUserHabitInput>
 }
 
-export type HabitCompletionUpdateManyWithWhereWithoutHabitInput = {
+export type HabitCompletionUpdateManyWithWhereWithoutUserHabitInput = {
   where: Prisma.HabitCompletionScalarWhereInput
-  data: Prisma.XOR<Prisma.HabitCompletionUpdateManyMutationInput, Prisma.HabitCompletionUncheckedUpdateManyWithoutHabitInput>
+  data: Prisma.XOR<Prisma.HabitCompletionUpdateManyMutationInput, Prisma.HabitCompletionUncheckedUpdateManyWithoutUserHabitInput>
 }
 
 export type HabitCompletionScalarWhereInput = {
@@ -356,26 +356,26 @@ export type HabitCompletionScalarWhereInput = {
   OR?: Prisma.HabitCompletionScalarWhereInput[]
   NOT?: Prisma.HabitCompletionScalarWhereInput | Prisma.HabitCompletionScalarWhereInput[]
   id?: Prisma.StringFilter<"HabitCompletion"> | string
-  habitId?: Prisma.StringFilter<"HabitCompletion"> | string
+  userHabitId?: Prisma.StringFilter<"HabitCompletion"> | string
   completedAt?: Prisma.DateTimeFilter<"HabitCompletion"> | Date | string
 }
 
-export type HabitCompletionCreateManyHabitInput = {
+export type HabitCompletionCreateManyUserHabitInput = {
   id?: string
   completedAt?: Date | string
 }
 
-export type HabitCompletionUpdateWithoutHabitInput = {
+export type HabitCompletionUpdateWithoutUserHabitInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type HabitCompletionUncheckedUpdateWithoutHabitInput = {
+export type HabitCompletionUncheckedUpdateWithoutUserHabitInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type HabitCompletionUncheckedUpdateManyWithoutHabitInput = {
+export type HabitCompletionUncheckedUpdateManyWithoutUserHabitInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   completedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -384,50 +384,50 @@ export type HabitCompletionUncheckedUpdateManyWithoutHabitInput = {
 
 export type HabitCompletionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  habitId?: boolean
+  userHabitId?: boolean
   completedAt?: boolean
-  habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
+  userHabit?: boolean | Prisma.UserHabitDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["habitCompletion"]>
 
 export type HabitCompletionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  habitId?: boolean
+  userHabitId?: boolean
   completedAt?: boolean
-  habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
+  userHabit?: boolean | Prisma.UserHabitDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["habitCompletion"]>
 
 export type HabitCompletionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  habitId?: boolean
+  userHabitId?: boolean
   completedAt?: boolean
-  habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
+  userHabit?: boolean | Prisma.UserHabitDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["habitCompletion"]>
 
 export type HabitCompletionSelectScalar = {
   id?: boolean
-  habitId?: boolean
+  userHabitId?: boolean
   completedAt?: boolean
 }
 
-export type HabitCompletionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "habitId" | "completedAt", ExtArgs["result"]["habitCompletion"]>
+export type HabitCompletionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userHabitId" | "completedAt", ExtArgs["result"]["habitCompletion"]>
 export type HabitCompletionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
+  userHabit?: boolean | Prisma.UserHabitDefaultArgs<ExtArgs>
 }
 export type HabitCompletionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
+  userHabit?: boolean | Prisma.UserHabitDefaultArgs<ExtArgs>
 }
 export type HabitCompletionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
+  userHabit?: boolean | Prisma.UserHabitDefaultArgs<ExtArgs>
 }
 
 export type $HabitCompletionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "HabitCompletion"
   objects: {
-    habit: Prisma.$HabitPayload<ExtArgs>
+    userHabit: Prisma.$UserHabitPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    habitId: string
+    userHabitId: string
     completedAt: Date
   }, ExtArgs["result"]["habitCompletion"]>
   composites: {}
@@ -823,7 +823,7 @@ readonly fields: HabitCompletionFieldRefs;
  */
 export interface Prisma__HabitCompletionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  habit<T extends Prisma.HabitDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HabitDefaultArgs<ExtArgs>>): Prisma.Prisma__HabitClient<runtime.Types.Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  userHabit<T extends Prisma.UserHabitDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserHabitDefaultArgs<ExtArgs>>): Prisma.Prisma__UserHabitClient<runtime.Types.Result.GetResult<Prisma.$UserHabitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -854,7 +854,7 @@ export interface Prisma__HabitCompletionClient<T, Null = never, ExtArgs extends 
  */
 export interface HabitCompletionFieldRefs {
   readonly id: Prisma.FieldRef<"HabitCompletion", 'String'>
-  readonly habitId: Prisma.FieldRef<"HabitCompletion", 'String'>
+  readonly userHabitId: Prisma.FieldRef<"HabitCompletion", 'String'>
   readonly completedAt: Prisma.FieldRef<"HabitCompletion", 'DateTime'>
 }
     

@@ -52,7 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Habit: 'Habit',
+  HabitTemplate: 'HabitTemplate',
+  UserHabit: 'UserHabit',
   HabitCompletion: 'HabitCompletion'
 } as const
 
@@ -84,28 +85,45 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const HabitScalarFieldEnum = {
+export const HabitTemplateScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
   scheduleType: 'scheduleType',
   habitType: 'habitType',
-  habitStatus: 'habitStatus',
-  isPlatformCreated: 'isPlatformCreated',
+  targetPerPeriod: 'targetPerPeriod',
+  endDate: 'endDate',
+  source: 'source',
   isPublic: 'isPublic',
+  createdByUserId: 'createdByUserId',
+  sourceUserHabitId: 'sourceUserHabitId',
+  createdAt: 'createdAt'
+} as const
+
+export type HabitTemplateScalarFieldEnum = (typeof HabitTemplateScalarFieldEnum)[keyof typeof HabitTemplateScalarFieldEnum]
+
+
+export const UserHabitScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  templateId: 'templateId',
+  name: 'name',
+  description: 'description',
+  scheduleType: 'scheduleType',
+  habitType: 'habitType',
+  habitStatus: 'habitStatus',
   currentStreak: 'currentStreak',
   targetPerPeriod: 'targetPerPeriod',
-  userId: 'userId',
   createdAt: 'createdAt',
   endDate: 'endDate'
 } as const
 
-export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]
+export type UserHabitScalarFieldEnum = (typeof UserHabitScalarFieldEnum)[keyof typeof UserHabitScalarFieldEnum]
 
 
 export const HabitCompletionScalarFieldEnum = {
   id: 'id',
-  habitId: 'habitId',
+  userHabitId: 'userHabitId',
   completedAt: 'completedAt'
 } as const
 

@@ -47,10 +47,15 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model Habit
+ * Model HabitTemplate
  * 
  */
-export type Habit = Prisma.HabitModel
+export type HabitTemplate = Prisma.HabitTemplateModel
+/**
+ * Model UserHabit
+ * 
+ */
+export type UserHabit = Prisma.UserHabitModel
 /**
  * Model HabitCompletion
  * 

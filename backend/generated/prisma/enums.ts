@@ -36,3 +36,11 @@ export const HabitType = {
 } as const
 
 export type HabitType = (typeof HabitType)[keyof typeof HabitType]
+
+
+export const TemplateSource = {
+  PLATFORM: 'PLATFORM',
+  USER: 'USER'
+} as const
+
+export type TemplateSource = (typeof TemplateSource)[keyof typeof TemplateSource]

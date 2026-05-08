@@ -2,74 +2,78 @@ import { useEffect, useMemo, useState } from 'react';
 import { apiFetch, readApiError } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 
-type Habit = {
+type HabitTemplate = {
   id: string;
   name: string;
   description: string | null;
   habitType: 'HEALTH' | 'PRODUCTIVITY' | 'MINDFULNESS' | 'FITNESS' | 'LEARNING' | 'OTHER';
-  habitStatus: 'ACTIVE' | 'ARCHIVE';
   scheduleType: 'DAILY' | 'WEEKLY' | 'CUSTOM';
   targetPerPeriod: number;
-  user: {
+  source: 'PLATFORM' | 'USER';
+  createdByUser: {
     id: string;
     username: string;
-  };
+  } | null;
 };
 
 const categories = ['All', 'Health', 'Productivity', 'Mindfulness', 'Fitness', 'Learning', 'Other'] as const;
 
 const Library = () => {
   const { user } = useAuth();
-  const [habits, setHabits] = useState<Habit[]>([]);
+  const [templates, setTemplates] = useState<HabitTemplate[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [muscleSearchTerm, setMuscleSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<(typeof categories)[number]>('All');
   const [isLoading, setIsLoading] = useState(true);
   const [isFitnessImporting, setIsFitnessImporting] = useState(false);
-  const [claimingHabitId, setClaimingHabitId] = useState<string | null>(null);
-  const [claimedHabitIds, setClaimedHabitIds] = useState<string[]>([]);
+  const [claimingTemplateId, setClaimingTemplateId] = useState<string | null>(null);
+  const [claimedTemplateIds, setClaimedTemplateIds] = useState<string[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const loadHabits = async () => {
+    const loadTemplates = async () => {
       try {
-        const response = await apiFetch('/api/habits/');
+        const response = await apiFetch('/api/templates/');
 
         if (!response.ok) {
-          throw new Error(await readApiError(response, 'Could not load your habits.'));
+          throw new Error(await readApiError(response, 'Could not load the habit library.'));
         }
 
-        const data = (await response.json()) as { data: Habit[] };
-        setHabits(data.data);
+        const data = (await response.json()) as { data: HabitTemplate[] };
+        setTemplates(data.data);
       } catch (requestError) {
-        setError(requestError instanceof Error ? requestError.message : 'Could not load your habits.');
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Could not load the habit library.',
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
-    void loadHabits();
+    void loadTemplates();
   }, []);
 
-  const filteredHabits = useMemo(() => {
-    return habits.filter((habit) => {
+  const filteredTemplates = useMemo(() => {
+    return templates.filter((template) => {
       const categoryMatches =
-        selectedCategory === 'All' || habit.habitType === selectedCategory.toUpperCase();
+        selectedCategory === 'All' || template.habitType === selectedCategory.toUpperCase();
       const searchMatches =
         searchTerm.trim() === '' ||
-        habit.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        habit.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        template.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
       return categoryMatches && searchMatches;
     });
-  }, [habits, searchTerm, selectedCategory]);
+  }, [templates, searchTerm, selectedCategory]);
 
-  const handleClaim = async (habitId: string) => {
-    setClaimingHabitId(habitId);
+  const handleClaim = async (templateId: string) => {
+    setClaimingTemplateId(templateId);
     setError('');
 
     try {
-      const response = await apiFetch(`/api/habits/${habitId}/claim`, {
+      const response = await apiFetch(`/api/templates/${templateId}/claim`, {
         method: 'POST',
       });
 
@@ -77,8 +81,8 @@ const Library = () => {
         throw new Error(await readApiError(response, 'Could not claim this habit.'));
       }
 
-      setClaimedHabitIds((current) =>
-        current.includes(habitId) ? current : [...current, habitId],
+      setClaimedTemplateIds((current) =>
+        current.includes(templateId) ? current : [...current, templateId],
       );
     } catch (requestError) {
       setError(
@@ -87,7 +91,7 @@ const Library = () => {
           : 'Could not claim this habit.',
       );
     } finally {
-      setClaimingHabitId(null);
+      setClaimingTemplateId(null);
     }
   };
 
@@ -116,12 +120,12 @@ const Library = () => {
         throw new Error(await readApiError(response, 'Could not import fitness habits.'));
       }
 
-      const data = (await response.json()) as { data: Habit[] };
+      const data = (await response.json()) as { data: HabitTemplate[] };
 
-      setHabits((current) => {
-        const existingIds = new Set(current.map((habit) => habit.id));
-        const incomingHabits = data.data.filter((habit) => !existingIds.has(habit.id));
-        return [...incomingHabits, ...current];
+      setTemplates((current) => {
+        const existingIds = new Set(current.map((template) => template.id));
+        const incomingTemplates = data.data.filter((template) => !existingIds.has(template.id));
+        return [...incomingTemplates, ...current];
       });
     } catch (requestError) {
       setError(
@@ -157,9 +161,9 @@ const Library = () => {
         </form>
       )}
 
-      <input 
-        type="text" 
-        placeholder="Search habits..." 
+      <input
+        type="text"
+        placeholder="Search habits..."
         value={searchTerm}
         onChange={(event) => setSearchTerm(event.target.value)}
         className="w-full border p-3 rounded-md mb-6"
@@ -178,45 +182,57 @@ const Library = () => {
         ))}
       </div>
 
-      {isLoading && <p className="text-slate-500">Loading your habits...</p>}
+      {isLoading && <p className="text-slate-500">Loading the habit library...</p>}
       {error && <p className="text-red-600">{error}</p>}
-      {!isLoading && !error && filteredHabits.length === 0 && (
+      {!isLoading && !error && filteredTemplates.length === 0 && (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500">
           No habits matched your search yet.
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredHabits.map((habit) => (
-          <div key={habit.id} className="border p-6 rounded-lg bg-white shadow-sm flex flex-col h-full">
-            <h3 className="font-bold text-lg mb-2">{habit.name}</h3>
-            <p className="text-gray-500 text-sm mb-4 flex-1">
-              {habit.description || 'No description added for this habit yet.'}
-            </p>
-            <div className="text-xs text-gray-400 mb-4 flex items-center justify-between">
-              <span>{habit.scheduleType}</span>
-              <span>{habit.habitStatus}</span>
+        {filteredTemplates.map((template) => {
+          const isOwnedByCurrentUser = template.createdByUser?.id === user?.id;
+          const creatorLabel =
+            template.source === 'PLATFORM'
+              ? 'Platform'
+              : template.createdByUser?.username ?? 'Community';
+
+          return (
+            <div key={template.id} className="border p-6 rounded-lg bg-white shadow-sm flex flex-col h-full">
+              <h3 className="font-bold text-lg mb-2">{template.name}</h3>
+              <p className="text-gray-500 text-sm mb-4 flex-1">
+                {template.description || 'No description added for this habit yet.'}
+              </p>
+              <div className="text-xs text-gray-400 mb-4 flex items-center justify-between">
+                <span>{template.scheduleType}</span>
+                <span>{template.source === 'PLATFORM' ? 'Platform' : 'Community'}</span>
+              </div>
+              <div className="mt-auto flex items-center justify-between text-sm text-slate-600">
+                <span>Target: {template.targetPerPeriod}</span>
+                <span>By {creatorLabel}</span>
+              </div>
+              <button
+                type="button"
+                disabled={
+                  claimingTemplateId === template.id ||
+                  claimedTemplateIds.includes(template.id) ||
+                  isOwnedByCurrentUser
+                }
+                onClick={() => void handleClaim(template.id)}
+                className="mt-4 w-full rounded-lg border-2 border-gray-800 py-2 font-bold transition hover:bg-gray-800 hover:text-white disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
+              >
+                {isOwnedByCurrentUser
+                  ? 'Already yours'
+                  : claimedTemplateIds.includes(template.id)
+                    ? 'Claimed'
+                    : claimingTemplateId === template.id
+                      ? 'Claiming...'
+                      : 'Claim'}
+              </button>
             </div>
-            <div className="mt-auto flex items-center justify-between text-sm text-slate-600">
-              <span>Target: {habit.targetPerPeriod}</span>
-              <span>By {habit.user.username}</span>
-            </div>
-            <button
-              type="button"
-              disabled={claimingHabitId === habit.id || claimedHabitIds.includes(habit.id) || habit.user.id === user?.id}
-              onClick={() => void handleClaim(habit.id)}
-              className="mt-4 w-full rounded-lg border-2 border-gray-800 py-2 font-bold transition hover:bg-gray-800 hover:text-white disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
-            >
-              {habit.user.id === user?.id
-                ? 'Already yours'
-                : claimedHabitIds.includes(habit.id)
-                ? 'Claimed'
-                : claimingHabitId === habit.id
-                  ? 'Claiming...'
-                  : 'Claim'}
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

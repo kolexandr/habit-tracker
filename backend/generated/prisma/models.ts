@@ -9,6 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.ts'
-export type * from './models/Habit.ts'
+export type * from './models/HabitTemplate.ts'
+export type * from './models/UserHabit.ts'
 export type * from './models/HabitCompletion.ts'
 export type * from './commonInputTypes.ts'

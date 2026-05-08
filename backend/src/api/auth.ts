@@ -84,17 +84,17 @@ router.get("/profile-summary", requireAuth, async (req: Request, res: Response) 
     const userId = req.user!.id;
 
     const [totalHabits, totalCompletions, bestHabit] = await Promise.all([
-      prisma.habit.count({
+      prisma.userHabit.count({
         where: { userId },
       }),
       prisma.habitCompletion.count({
         where: {
-          habit: {
+          userHabit: {
             userId,
           },
         },
       }),
-      prisma.habit.findFirst({
+      prisma.userHabit.findFirst({
         where: { userId },
         orderBy: { currentStreak: "desc" },
         select: { currentStreak: true },

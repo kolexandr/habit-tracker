@@ -271,7 +271,7 @@ const PromptComposer = ({
 }: PromptComposerProps) => (
   <form
     onSubmit={onPromptSubmit}
-    className="rounded-[1.75rem] border border-slate-200 bg-white/95 p-3 shadow-xl backdrop-blur sm:p-4"
+    className="pointer-events-auto rounded-[1.75rem] border border-slate-200 bg-white/95 p-3 shadow-xl backdrop-blur sm:p-4"
   >
     <div className="flex flex-col gap-3">
       <textarea
@@ -867,7 +867,7 @@ const Dashboard = () => {
       </div>
 
       {coachViewState === 'idle' && (
-        <div className="fixed inset-x-0 bottom-0 z-30 px-4 pb-4">
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4">
           <div className="mx-auto max-w-4xl">
             <PromptComposer
               prompt={prompt}

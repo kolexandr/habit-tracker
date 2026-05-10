@@ -8,8 +8,8 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User.ts'
-export type * from './models/HabitTemplate.ts'
-export type * from './models/UserHabit.ts'
-export type * from './models/HabitCompletion.ts'
-export type * from './commonInputTypes.ts'
+export type * from './models/User.js'
+export type * from './models/HabitTemplate.js'
+export type * from './models/UserHabit.js'
+export type * from './models/HabitCompletion.js'
+export type * from './commonInputTypes.js'

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
-import { prisma } from "../../prisma.ts";
+import { prisma } from "../../prisma.js";
 import { z } from "zod";
-import { HabitStatus, HabitType, ScheduleType } from "../../generated/prisma/enums.ts";
+import { HabitStatus, HabitType, ScheduleType } from "../../generated/prisma/enums.js";
 
 const router = Router();
 const HABIT_NAME_MAX_LENGTH = 60;

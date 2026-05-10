@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { z } from "zod";
-import { prisma } from "../../prisma.ts";
-import { HabitType, ScheduleType, TemplateSource } from "../../generated/prisma/enums.ts";
+import { prisma } from "../../prisma.js";
+import { HabitType, ScheduleType, TemplateSource } from "../../generated/prisma/enums.js";
 
 const router = Router();
 

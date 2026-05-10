@@ -1,13 +1,13 @@
 import "dotenv/config";
 import express from "express";
-import {requireAuth} from "./src/middleware/auth.ts";
+import {requireAuth} from "./src/middleware/auth.js";
 import rateLimit from "express-rate-limit";
-import authRoute from "./src/api/auth.ts";
-import habitsRoute from "./src/api/habits.ts";
-import templatesRoute from "./src/api/templates.ts";
-import habitCompletionRoute from "./src/api/completion.ts";
-import geminiRoute from "./src/api/gemini.ts";
-import fitnessRoute from "./src/api/fitness.ts";
+import authRoute from "./src/api/auth.js";
+import habitsRoute from "./src/api/habits.js";
+import templatesRoute from "./src/api/templates.js";
+import habitCompletionRoute from "./src/api/completion.js";
+import geminiRoute from "./src/api/gemini.js";
+import fitnessRoute from "./src/api/fitness.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -17,6 +17,7 @@ const PORT = process.env.PORT;
 async function main() {
   const allowedOrigins = [
     "http://localhost:5173",
+    process.env.FRONTEND_URL as string,
   ];
 
   const corsOptions = {

@@ -6,6 +6,13 @@ import jwt from "jsonwebtoken";
 import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
+const isProduction = process.env.NODE_ENV === "production";
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  maxAge: 3600000,
+} as const;
 
 const RegisterSchema = z
   .object({
@@ -40,9 +47,6 @@ const LoginSchema = z
     }
   });
 
-type RegisterDto = z.output<typeof RegisterSchema>;
-type LoginDto = z.output<typeof LoginSchema>;
-
 router.get("/me", requireAuth, async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
@@ -72,8 +76,8 @@ router.get("/me", requireAuth, async (req: Request, res: Response) => {
 router.post("/logout", async (_req: Request, res: Response) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: cookieOptions.secure,
+    sameSite: cookieOptions.sameSite,
   });
 
   return res.status(200).json({ message: "Logged out successfully." });
@@ -178,12 +182,7 @@ router.post("/login", async (req:Request, res:Response) => {
 
     let token_jwt = jwt.sign(data_user, jwtSecretKey); 
 
-    res.cookie('token', token_jwt, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: 'strict',
-      maxAge: 3600000,
-    });
+    res.cookie("token", token_jwt, cookieOptions);
 
     // res.json({message: token_jwt);
 

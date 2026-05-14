@@ -13,17 +13,23 @@ import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT;
 
-
 async function main() {
   const allowedOrigins = [
     "http://localhost:5173",
-    process.env.FRONTEND_URL as string,
-  ];
+    process.env.FRONTEND_URL,
+  ].filter((origin): origin is string => Boolean(origin));
 
-  const corsOptions = {
-    origin: allowedOrigins,
+  const corsOptions: cors.CorsOptions = {
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     optionsSuccessStatus: 200,
-    credentials: true
+    credentials: true,
   };
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -34,8 +40,9 @@ async function main() {
   const app = express();
   app.use(express.json());
   app.use(limiter);
-  app.use(cookieParser())
+  app.use(cookieParser());
   app.use(cors(corsOptions));
+  app.options("*", cors(corsOptions));
   
   app.use("/api/auth/", authRoute);
   app.use("/api/habits/", requireAuth, habitsRoute);

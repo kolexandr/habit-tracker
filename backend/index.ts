@@ -42,7 +42,7 @@ async function main() {
   app.use(limiter);
   app.use(cookieParser());
   app.use(cors(corsOptions));
-  app.options("*", cors(corsOptions));
+  app.options("/{*splat}", cors(corsOptions));
   
   app.use("/api/auth/", authRoute);
   app.use("/api/habits/", requireAuth, habitsRoute);
